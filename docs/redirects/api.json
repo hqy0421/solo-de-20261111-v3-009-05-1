@@ -1,0 +1,1036 @@
+[
+  {
+    "source": "/docs/_apidocs/libraries/dagster-graphql",
+    "destination": "/docs/api/graphql/dagster-graphql",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/assets",
+    "destination": "/docs/api/dagster/assets",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/automation",
+    "destination": "/docs/api/dagster/assets#declarative-automation",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/metadata",
+    "destination": "/docs/api/dagster/metadata",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/jobs",
+    "destination": "/docs/api/dagster/jobs",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/definitions",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/ops",
+    "destination": "/docs/api/dagster/ops",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/graphs",
+    "destination": "/docs/api/dagster/graphs",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/resources",
+    "destination": "/docs/api/dagster/resources",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/loggers",
+    "destination": "/docs/api/dagster/loggers",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/config",
+    "destination": "/docs/api/dagster/config",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/types",
+    "destination": "/docs/api/dagster/types",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/cli",
+    "destination": "/docs/api/clis/cli",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/dagster/cli",
+    "destination": "/docs/api/clis/cli",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/external-assets",
+    "destination": "/docs/api/dagster/external-assets-instance-api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/external-assets-rest",
+    "destination": "/docs/api/rest-api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs",
+    "destination": "/docs/api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/apidocs/external-assets-rest",
+    "destination": "/docs/api/rest-api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/cli",
+    "destination": "/docs/api/clis/cli",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/operate/graphql",
+    "destination": "/docs/api/graphql",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/operate/graphql/graphql-client",
+    "destination": "/docs/api/graphql/graphql-client",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/external-assets",
+    "destination": "/docs/api/dagster/external-assets-instance-api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/external-assets",
+    "destination": "/docs/api/dagster/external-assets-instance-api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/dagster-shell",
+    "destination": "/docs/api/dagster/pipes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/events",
+    "destination": "/docs/api/dagster"
+  },
+  {
+    "source": "/docs/api/dg/create-dagster",
+    "destination": "/docs/api/clis/create-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/dg/dg-cli",
+    "destination": "/docs/api/clis/dg-cli/dg-cli-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/dg/dg-cli-configuration",
+    "destination": "/docs/api/clis/dg-cli/dg-cli-configuration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/dagster-cloud-cli",
+    "destination": "/docs/api/clis/dagster-cloud-cli",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/management/dagster-cloud-cli",
+    "destination": "/docs/api/clis/dagster-cloud-cli",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/management/dagster-cloud-cli/dagster-cloud-cli-reference",
+    "destination": "/docs/api/clis/dagster-cloud-cli/dagster-cloud-cli-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/management/dagster-cloud-cli/installing-and-configuring",
+    "destination": "/docs/api/clis/dagster-cloud-cli/installing-and-configuring",
+    "permanent": true
+  },
+  {
+    "source": "/docs/concepts/repositories-workspaces/repositories",
+    "destination": "/docs/api/dagster/repositories",
+    "permanent": true
+  },
+  {
+    "source": "/docs/concepts/types",
+    "destination": "/docs/api/dagster/types",
+    "permanent": true
+  },
+  {
+    "source": "/docs/concepts/webserver/graphql-client",
+    "destination": "/docs/api/graphql/graphql-client",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/dagster-plus-cli",
+    "destination": "/docs/api/clis/dagster-cloud-cli",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/libraries/dagster-graphql",
+    "destination": "/docs/api/graphql/dagster-graphql",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster_graphql/client/client",
+    "destination": "/docs/api/graphql/dagster-graphql#dagster_graphql.DagsterGraphQLClient",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster_shell/ops",
+    "destination": "/docs/api/dagster/pipes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_config/config_schema",
+    "destination": "/docs/api/dagster/config#dagster.ConfigSchema",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_config/config_type",
+    "destination": "/docs/api/dagster/config",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_config/field",
+    "destination": "/docs/api/dagster/config#dagster.Field",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_config/field_utils",
+    "destination": "/docs/api/dagster/config#config-utilities",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_config/pythonic_config/config",
+    "destination": "/docs/api/dagster/config#dagster.Config",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_config/pythonic_config/resource",
+    "destination": "/docs/api/dagster/config#pythonic-config-system",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/asset_check_result",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/asset_check_spec",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/asset_dep",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/asset_key",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/asset_out",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/asset_selection",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/asset_spec",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/assets",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/auto_materialize_rule",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/backfill_policy",
+    "destination": "/docs/api/dagster/partitions#backfill-policy",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/declarative_automation/automation_condition",
+    "destination": "/docs/api/dagster/assets#declarative-automation",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/declarative_automation/legacy/asset_condition",
+    "destination": "/docs/api/dagster/assets#declarative-automation",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/decorators/asset_check_decorator",
+    "destination": "/docs/api/dagster/asset-checks",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/decorators/asset_decorator",
+    "destination": "/docs/api/dagster/assets",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/decorators/op_decorator",
+    "destination": "/docs/api/dagster/ops",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/decorators/repository_decorator",
+    "destination": "/docs/api/dagster/repositories",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/decorators/schedule_decorator",
+    "destination": "/docs/api/dagster/schedules-sensors",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/decorators/sensor_decorator",
+    "destination": "/docs/api/dagster/schedules-sensors",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/definitions_class",
+    "destination": "/docs/api/dagster/definitions#dagster.Definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/dependency",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/events",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/executor_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/graph_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/hook_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/input",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/job_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/load_asset_checks_from_modules",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/load_assets_from_modules",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/materialize",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/metadata",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/metadata/metadata_value",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/metadata/source_code",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/multi_asset_sensor_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/multi_dimensional_partitions",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/op_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/output",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/partition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/partition_mapping",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/partitioned_schedule",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/policy",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/reconstruct",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/repository_definition/repository_data",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/repository_definition/repository_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/resource_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/run_request",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/run_status_sensor_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/schedule_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/sensor_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/source_asset",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/time_window_partition_mapping",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/time_window_partitions",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/unresolved_asset_job_definition",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/definitions/utils",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/errors",
+    "destination": "/docs/api/dagster/errors",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/event_api",
+    "destination": "/docs/api/dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/events",
+    "destination": "/docs/api/dagster/execution#dagster.DagsterEvent",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/events/log",
+    "destination": "/docs/api/dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/execution/api",
+    "destination": "/docs/api/dagster/execution",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/execution/build_resources",
+    "destination": "/docs/api/dagster/execution",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/execution/context/asset_execution_context",
+    "destination": "/docs/api/dagster/execution#dagster.AssetExecutionContext",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/execution/context/hook",
+    "destination": "/docs/api/dagster/execution#contexts",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/execution/context/init",
+    "destination": "/docs/api/dagster/execution#contexts",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/execution/context/input",
+    "destination": "/docs/api/dagster/execution#contexts",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/execution/context/invocation",
+    "destination": "/docs/api/dagster/execution#contexts",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/execution/context/op_execution_context",
+    "destination": "/docs/api/dagster/execution#contexts",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/execution/context/output",
+    "destination": "/docs/api/dagster/execution#contexts",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/execution/context/system",
+    "destination": "/docs/api/dagster/execution#contexts",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/instance",
+    "destination": "/docs/api/dagster/internals#dagster.DagsterInstance",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/instance/ref",
+    "destination": "/docs/api/dagster/internals#dagster._core.instance.InstanceRef",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/launcher/default_run_launcher",
+    "destination": "/docs/api/dagster/internals#dagster._core.launcher.DefaultRunLauncher",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/log_manager",
+    "destination": "/docs/api/dagster/internals#dagster._core.storage.compute_log_manager.ComputeLogManager",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/pipes/context",
+    "destination": "/docs/api/dagster/pipes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/pipes/utils",
+    "destination": "/docs/api/dagster/pipes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/run_coordinator/queued_run_coordinator",
+    "destination": "/docs/api/dagster/internals#dagster._core.run_coordinator.QueuedRunCoordinator",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/scheduler/scheduler",
+    "destination": "/docs/api/dagster/internals#dagster._core.scheduler.Scheduler",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/dagster_run",
+    "destination": "/docs/api/dagster/internals#dagster.DagsterRun",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/event_log/base",
+    "destination": "/docs/api/dagster/internals#dagster._core.storage.event_log.EventLogStorage",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/event_log/sql_event_log",
+    "destination": "/docs/api/dagster/internals#dagster._core.storage.event_log.SqlEventLogStorage",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/event_log/sqlite/consolidated_sqlite_event_log",
+    "destination": "/docs/api/dagster/internals#dagster._core.storage.event_log.ConsolidatedSqliteEventLogStorage",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/event_log/sqlite/sqlite_event_log",
+    "destination": "/docs/api/dagster/internals#dagster._core.storage.event_log.SqliteEventLogStorage",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/file_manager",
+    "destination": "/docs/api/dagster/internals#dagster._core.storage.file_manager.FileManager",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/fs_io_manager",
+    "destination": "/docs/api/dagster/internals#storage",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/io_manager",
+    "destination": "/docs/api/dagster/internals#storage",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/local_compute_log_manager",
+    "destination": "/docs/api/dagster/internals#dagster._core.storage.local_compute_log_manager.LocalComputeLogManager",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/runs/base",
+    "destination": "/docs/api/dagster/internals#dagster.DagsterRun",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/runs/sqlite/sqlite_run_storage",
+    "destination": "/docs/api/dagster/internals#dagster._core.storage.runs.SqliteRunStorage",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/upath_io_manager",
+    "destination": "/docs/api/dagster/internals#storage",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/types/dagster_type",
+    "destination": "/docs/api/dagster/types#dagster.DagsterType",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_serdes/config_class",
+    "destination": "/docs/api/dagster/internals#dagster._serdes.ConfigurableClass",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/mem_io_manager",
+    "destination": "/docs/api/dagster/internals#storage",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/runs/sql_run_storage",
+    "destination": "/docs/api/dagster/internals#dagster._core.storage.runs.SqlRunStorage",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_core/storage/schedules/sql_schedule_storage",
+    "destination": "/docs/api/dagster/internals#dagster._core.storage.schedules.SqlScheduleStorage",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_utils",
+    "destination": "/docs/api/dagster/utilities",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_utils/alert",
+    "destination": "/docs/api/dagster/utilities",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_utils/forked_pdb",
+    "destination": "/docs/api/dagster/utilities#dagster._utils.forked_pdb.ForkedPdb",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_utils/log",
+    "destination": "/docs/api/dagster/utilities#dagster.get_dagster_logger",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_modules/dagster/_utils/warnings",
+    "destination": "/docs/api/dagster/utilities#dagster.PreviewWarning",
+    "permanent": true
+  },
+  {
+    "source": "/docs/concepts/dagit/graphql-client",
+    "destination": "/docs/api/graphql/graphql-client",
+    "permanent": true
+  },
+  {
+    "source": "/docs/_apidocs/solids",
+    "destination": "/docs/api/dagster/assets",
+    "permanent": true
+  },
+  {
+    "source": "/docs/master/_apidocs/experimental",
+    "destination": "/docs/api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/asset-checks",
+    "destination": "/docs/api/dagster/asset-checks",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/assets",
+    "destination": "/docs/api/dagster/assets",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/cli",
+    "destination": "/docs/api/clis/cli",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/config",
+    "destination": "/docs/api/dagster/config",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/definitions",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/dynamic",
+    "destination": "/docs/api/dagster/dynamic",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/errors",
+    "destination": "/docs/api/dagster/errors",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/execution",
+    "destination": "/docs/api/dagster/execution",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/external-assets-instance-api",
+    "destination": "/docs/api/dagster/external-assets-instance-api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/external-assets-rest-api",
+    "destination": "/docs/api/rest-api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/rest-apis/external-assets-rest-api",
+    "destination": "/docs/api/rest-api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/dagster/external-assets-rest-api",
+    "destination": "/docs/api/rest-api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/graphs",
+    "destination": "/docs/api/dagster/graphs",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/hooks",
+    "destination": "/docs/api/dagster/hooks",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/internals",
+    "destination": "/docs/api/dagster/internals",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/io-managers",
+    "destination": "/docs/api/dagster/io-managers",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/jobs",
+    "destination": "/docs/api/dagster/jobs",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/loggers",
+    "destination": "/docs/api/dagster/loggers",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/metadata",
+    "destination": "/docs/api/dagster/metadata",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/ops",
+    "destination": "/docs/api/dagster/ops",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/partitions",
+    "destination": "/docs/api/dagster/partitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/pipes",
+    "destination": "/docs/api/dagster/pipes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/repositories",
+    "destination": "/docs/api/dagster/repositories",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/resources",
+    "destination": "/docs/api/dagster/resources",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/schedules-sensors",
+    "destination": "/docs/api/dagster/schedules-sensors",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/types",
+    "destination": "/docs/api/dagster/types",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/utilities",
+    "destination": "/docs/api/dagster/utilities",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api",
+    "destination": "/docs/api",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/api-lifecycle/api-lifecycle-stages",
+    "destination": "/docs/api/api-lifecycle",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/asset-checks",
+    "destination": "/docs/api/dagster/asset-checks",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/assets",
+    "destination": "/docs/api/dagster/assets",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/definitions",
+    "destination": "/docs/api/dagster/definitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/dynamic",
+    "destination": "/docs/api/dagster/dynamic",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/errors",
+    "destination": "/docs/api/dagster/errors",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/execution",
+    "destination": "/docs/api/dagster/execution",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/hooks",
+    "destination": "/docs/api/dagster/hooks",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/internals",
+    "destination": "/docs/api/dagster/internals",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/io-managers",
+    "destination": "/docs/api/dagster/io-managers",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/jobs",
+    "destination": "/docs/api/dagster/jobs",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/loggers",
+    "destination": "/docs/api/dagster/loggers",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/metadata",
+    "destination": "/docs/api/dagster/metadata",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/ops",
+    "destination": "/docs/api/dagster/ops",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/partitions",
+    "destination": "/docs/api/dagster/partitions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/pipes",
+    "destination": "/docs/api/dagster/pipes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/libraries/dagster-pipes",
+    "destination": "/docs/integrations/libraries/pipes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/repositories",
+    "destination": "/docs/api/dagster/repositories",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/resources",
+    "destination": "/docs/api/dagster/resources",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/schedules-sensors",
+    "destination": "/docs/api/dagster/schedules-sensors",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/types",
+    "destination": "/docs/api/dagster/types",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/labs/dg/dagster-dg-cli",
+    "destination": "/docs/api/clis/dg-cli/dg-cli-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/labs/create-dagster",
+    "destination": "/docs/api/clis/create-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/labs/dg/configuring-dg",
+    "destination": "/docs/api/clis/dg-cli/dg-cli-configuration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/dagster/dg-cli",
+    "destination": "/docs/api/clis/dg-cli/dg-cli-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/dagster/resolved",
+    "destination": "/docs/api/dagster/components",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/build/components/built-in-components",
+    "destination": "/docs/api/dagster/components#built-in-components",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/labs/dg/dagster-definitions",
+    "destination": "/docs/api/clis/dg-cli/dg-cli-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/dagster/create-dagster",
+    "destination": "/docs/api/clis/create-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/next/api/python-api/libraries/dagster-graphql",
+    "destination": "/docs/api/graphql/dagster-graphql",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/python-api/libraries/dagster-graphql",
+    "destination": "/docs/api/graphql/dagster-graphql",
+    "permanent": true
+  },
+  {
+    "source": "/docs/concepts/webserver/graphql",
+    "destination": "/docs/api/graphql",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/resources",
+    "destination": "/docs/api/dagster/resources",
+    "permanent": true
+  },
+  {
+    "source": "/docs/api/dagster/pipe",
+    "destination": "/docs/api/dagster/pipes",
+    "permanent": true
+  }
+]

@@ -1,0 +1,421 @@
+import {
+  Box,
+  Button,
+  ButtonLink,
+  Colors,
+  Icon,
+  JoinedButtons,
+  Tooltip,
+} from '@dagster-io/ui-components';
+import * as React from 'react';
+
+import {CreatePartitionDialog} from './CreatePartitionDialog';
+import {DimensionRangeInput} from './DimensionRangeInput';
+import {OrdinalPartitionSelector} from './OrdinalPartitionSelector';
+import {PartitionDateRangeSelector} from './PartitionDateRangeSelector';
+import {PartitionStatus, PartitionStatusHealthSource} from './PartitionStatus';
+import {convertToPartitionSelection} from './SpanRepresentation';
+import {detectDatePartitions} from './isDateFormattedPartitions';
+import {PartitionDateFilter, filterPartitionKeysByDate} from './partitionDateFilter';
+import {usePermissionsForLocation} from '../app/Permissions';
+import {AssetPartitionStatus} from '../assets/AssetPartitionStatus';
+import {Range, rangesClippedToSelection} from '../assets/usePartitionHealthData';
+import {PartitionDefinitionType, RunStatus} from '../graphql/types';
+import {useUpdatingRef} from '../hooks/useUpdatingRef';
+import {ActivatableButton} from '../runs/ActivatableButton';
+import {testId} from '../testing/testId';
+import {RepoAddress} from '../workspace/types';
+
+export const DimensionRangeWizard = ({
+  selected,
+  setSelected,
+  partitionKeys,
+  health,
+  dimensionType,
+  dynamicPartitionsDefinitionName,
+  repoAddress,
+  refetch,
+  showQuickSelectOptionsForStatuses,
+  dateFilter: controlledDateFilter,
+  onDateFilterChange,
+}: {
+  selected: string[];
+  setSelected: (selected: string[]) => void;
+  partitionKeys: string[];
+  health: PartitionStatusHealthSource;
+  dimensionType: PartitionDefinitionType;
+  dynamicPartitionsDefinitionName?: string | null;
+  repoAddress?: RepoAddress;
+  refetch?: () => Promise<void>;
+  showQuickSelectOptionsForStatuses: boolean;
+  // Pass both to control the date window from the parent, e.g. to open with a
+  // default window and message about the partitions it hides.
+  dateFilter?: PartitionDateFilter | null;
+  onDateFilterChange?: (filter: PartitionDateFilter | null) => void;
+}) => {
+  const isTimeseries = dimensionType === PartitionDefinitionType.TIME_WINDOW;
+  const isDynamic = dimensionType === PartitionDefinitionType.DYNAMIC;
+
+  const [showCreatePartition, setShowCreatePartition] = React.useState(false);
+  const {
+    permissions: {canEditDynamicPartitions},
+    disabledReasons,
+  } = usePermissionsForLocation(repoAddress?.location);
+
+  const datePartitionInfo = React.useMemo(
+    () => (isTimeseries ? detectDatePartitions(partitionKeys) : null),
+    [isTimeseries, partitionKeys],
+  );
+
+  const [uncontrolledDateFilter, setUncontrolledDateFilter] =
+    React.useState<PartitionDateFilter | null>(null);
+  const suppliedDateFilter = onDateFilterChange
+    ? (controlledDateFilter ?? null)
+    : uncontrolledDateFilter;
+  const setDateFilter = onDateFilterChange ?? setUncontrolledDateFilter;
+
+  // A date window can only narrow keys that carry a date prefix, so ignore one
+  // that a parent applied uniformly across dimensions.
+  const dateFilter = datePartitionInfo ? suppliedDateFilter : null;
+
+  const filteredPartitionKeys = React.useMemo(
+    () => filterPartitionKeysByDate(partitionKeys, dateFilter),
+    [dateFilter, partitionKeys],
+  );
+
+  // Build a health object with ranges clipped and re-indexed to the filtered key space
+  const filteredHealth = React.useMemo((): PartitionStatusHealthSource => {
+    if (!dateFilter || !('ranges' in health)) {
+      return health;
+    }
+    // Find the index range in the original partitionKeys that corresponds to filteredPartitionKeys
+    const firstFilteredIdx = partitionKeys.indexOf(filteredPartitionKeys[0] ?? '');
+    const lastFilteredIdx = partitionKeys.indexOf(
+      filteredPartitionKeys[filteredPartitionKeys.length - 1] ?? '',
+    );
+    if (firstFilteredIdx === -1 || lastFilteredIdx === -1) {
+      return health;
+    }
+
+    // Clip ranges to the filtered index window
+    const startKey = partitionKeys[firstFilteredIdx];
+    const endKey = partitionKeys[lastFilteredIdx];
+    if (!startKey || !endKey) {
+      return health;
+    }
+    const selection = [
+      {
+        start: {key: startKey, idx: firstFilteredIdx},
+        end: {key: endKey, idx: lastFilteredIdx},
+      },
+    ];
+    const clipped = rangesClippedToSelection(health.ranges, selection);
+
+    // Re-index: shift all indices so they're relative to the filtered array (starting at 0)
+    const remapped: Range[] = clipped.map((range) => ({
+      ...range,
+      start: {key: range.start.key, idx: range.start.idx - firstFilteredIdx},
+      end: {key: range.end.key, idx: range.end.idx - firstFilteredIdx},
+    }));
+
+    return {ranges: remapped};
+  }, [dateFilter, health, partitionKeys, filteredPartitionKeys]);
+
+  const [selectState, setSelectState] = React.useState<
+    'all' | 'failed' | 'missing' | 'failed_and_missing' | 'latest' | 'custom'
+  >('custom');
+
+  // Use refs so that the effect below doesn't re-fire when `health` or
+  // `setSelected` get new (but semantically equal) references on each render.
+  // The parent (DimensionRangeWizards) passes inline objects/closures for these
+  // props, so their identity changes every render cycle.
+  const healthRef = useUpdatingRef(filteredHealth);
+  const setSelectedRef = useUpdatingRef(setSelected);
+
+  const applySelectState = React.useCallback(
+    (state: typeof selectState, keys: string[]) => {
+      switch (state) {
+        case 'all':
+          setSelectedRef.current(keys);
+          break;
+        case 'latest':
+          setSelectedRef.current(keys.slice(-1));
+          break;
+        case 'failed':
+          setSelectedRef.current(getFailedPartitions(healthRef.current, keys));
+          break;
+        case 'missing':
+          setSelectedRef.current(getMissingPartitions(healthRef.current, keys));
+          break;
+        case 'failed_and_missing': {
+          const failed = getFailedPartitions(healthRef.current, keys);
+          const missing = getMissingPartitions(healthRef.current, keys);
+          setSelectedRef.current(Array.from(new Set([...failed, ...missing])));
+          break;
+        }
+        case 'custom':
+          break;
+      }
+    },
+    [healthRef, setSelectedRef],
+  );
+
+  // Re-apply the left-hand select state when the filtered keys change (unless custom).
+  React.useEffect(() => {
+    if (selectState !== 'custom') {
+      applySelectState(selectState, filteredPartitionKeys);
+    }
+  }, [filteredPartitionKeys, selectState, applySelectState]);
+
+  // Moving the window replaces a custom selection with everything now visible,
+  // so the user is never left with an empty selection or with hidden keys still
+  // selected. Only user action does this - a window applied programmatically
+  // (a default, say) leaves the selection alone.
+  const handleDateFilterChange = React.useCallback(
+    (next: PartitionDateFilter | null) => {
+      setDateFilter(next);
+      if (selectState === 'custom') {
+        setSelectedRef.current(filterPartitionKeysByDate(partitionKeys, next));
+      }
+    },
+    [partitionKeys, selectState, setDateFilter, setSelectedRef],
+  );
+
+  // When the user directly edits the input or drags on the partition bar while
+  // a preset tab is active, switch to Custom and keep their edit.
+  const handleUserEdit = React.useCallback(
+    (newSelected: string[]) => {
+      if (selectState !== 'custom') {
+        setSelectState('custom');
+      }
+      setSelectedRef.current(newSelected);
+    },
+    [selectState, setSelectedRef],
+  );
+
+  const quickSelectButtons = showQuickSelectOptionsForStatuses && (
+    <Box flex={{direction: 'row', gap: 8, justifyContent: 'space-between', alignItems: 'center'}}>
+      <JoinedButtons>
+        {isTimeseries && (
+          <ActivatableButton
+            $active={selectState === 'latest'}
+            onClick={() => {
+              setSelectState('latest');
+              applySelectState('latest', filteredPartitionKeys);
+            }}
+            data-testid={testId('latest-partition-button')}
+          >
+            Latest
+          </ActivatableButton>
+        )}
+        <ActivatableButton
+          $active={selectState === 'all'}
+          onClick={() => {
+            setSelectState('all');
+            applySelectState('all', filteredPartitionKeys);
+          }}
+          data-testid={testId('all-partition-button')}
+        >
+          All
+        </ActivatableButton>
+        <ActivatableButton
+          $active={selectState === 'failed'}
+          onClick={() => {
+            setSelectState('failed');
+            applySelectState('failed', filteredPartitionKeys);
+          }}
+        >
+          Failed
+        </ActivatableButton>
+        <ActivatableButton
+          $active={selectState === 'missing'}
+          onClick={() => {
+            setSelectState('missing');
+            applySelectState('missing', filteredPartitionKeys);
+          }}
+        >
+          Missing
+        </ActivatableButton>
+        <ActivatableButton
+          $active={selectState === 'failed_and_missing'}
+          onClick={() => {
+            setSelectState('failed_and_missing');
+            applySelectState('failed_and_missing', filteredPartitionKeys);
+          }}
+        >
+          Failed and missing
+        </ActivatableButton>
+        <ActivatableButton
+          $active={selectState === 'custom'}
+          onClick={() => {
+            setSelectState('custom');
+            applySelectState('all', filteredPartitionKeys);
+          }}
+        >
+          Custom
+        </ActivatableButton>
+      </JoinedButtons>
+      {datePartitionInfo && (
+        <PartitionDateRangeSelector
+          filter={dateFilter}
+          onFilterChange={handleDateFilterChange}
+          isHighResolution={datePartitionInfo.isHighResolution}
+        />
+      )}
+    </Box>
+  );
+
+  return (
+    <>
+      <Box flex={{direction: 'row', alignItems: 'center', gap: 8}} padding={{vertical: 4}}>
+        <Box flex={{direction: 'column', gap: 8}} style={{flex: 1}}>
+          {quickSelectButtons}
+          {isTimeseries ? (
+            <DimensionRangeInput
+              value={selected}
+              partitionKeys={filteredPartitionKeys}
+              onChange={handleUserEdit}
+              isTimeseries={isTimeseries}
+              emptyPlaceholder={
+                (selectState !== 'custom' && selectState !== 'all') || !!dateFilter
+                  ? 'No matching partitions'
+                  : undefined
+              }
+            />
+          ) : (
+            <OrdinalPartitionSelector
+              allPartitions={partitionKeys}
+              selectedPartitions={selected}
+              setSelectedPartitions={handleUserEdit}
+              health={health}
+              setShowCreatePartition={setShowCreatePartition}
+              isDynamic={isDynamic}
+            />
+          )}
+        </Box>
+        {isTimeseries && !showQuickSelectOptionsForStatuses && (
+          <Button
+            onClick={() => setSelected(partitionKeys.slice(-1))}
+            data-testid={testId('latest-partition-button')}
+          >
+            Latest
+          </Button>
+        )}
+        {!showQuickSelectOptionsForStatuses && (
+          <Button
+            onClick={() => setSelected(partitionKeys)}
+            data-testid={testId('all-partition-button')}
+          >
+            All
+          </Button>
+        )}
+      </Box>
+      <Box margin={{bottom: 8}}>
+        {isDynamic && (
+          <Tooltip
+            content={disabledReasons.canEditDynamicPartitions}
+            canShow={!canEditDynamicPartitions}
+          >
+            <ButtonLink
+              disabled={!canEditDynamicPartitions}
+              color={Colors.linkDefault()}
+              underline="hover"
+              onClick={() => {
+                setShowCreatePartition(true);
+              }}
+              data-testid={testId('add-partition-link')}
+            >
+              <Box flex={{direction: 'row', alignItems: 'center', gap: 8}}>
+                <Icon name="add" size={24} />
+                <div>Add a partition</div>
+              </Box>
+            </ButtonLink>
+          </Tooltip>
+        )}
+        {isTimeseries && (
+          <PartitionStatus
+            partitionNames={filteredPartitionKeys}
+            health={filteredHealth}
+            splitPartitions={!isTimeseries}
+            selected={selected}
+            onSelect={handleUserEdit}
+            dateFilterMessage={
+              dateFilter && datePartitionInfo ? (
+                <Box
+                  flex={{direction: 'row', alignItems: 'center', justifyContent: 'center', gap: 6}}
+                  color={Colors.textLight()}
+                >
+                  Showing {filteredPartitionKeys.length} of {partitionKeys.length} partitions
+                  <ButtonLink
+                    color={Colors.linkDefault()}
+                    underline="hover"
+                    onClick={() => handleDateFilterChange(null)}
+                  >
+                    Clear
+                  </ButtonLink>
+                </Box>
+              ) : null
+            }
+          />
+        )}
+      </Box>
+      {repoAddress && (
+        <CreatePartitionDialog
+          key={showCreatePartition ? '1' : '0'}
+          isOpen={showCreatePartition}
+          dynamicPartitionsDefinitionName={dynamicPartitionsDefinitionName}
+          repoAddress={repoAddress}
+          close={() => {
+            setShowCreatePartition(false);
+          }}
+          refetch={refetch}
+          onCreated={(partitionName) => {
+            setSelected([...selected, partitionName]);
+          }}
+        />
+      )}
+    </>
+  );
+};
+
+const getMissingPartitions = (health: PartitionStatusHealthSource, partitionKeys: string[]) => {
+  if ('ranges' in health) {
+    // Compute missing as the complement of all non-missing ranges. This handles two cases:
+    // - Time-based partitions: missing partitions are gaps (no explicit MISSING ranges)
+    // - Static partitions: explicit MISSING ranges exist alongside materialized ranges
+    // In both cases, the complement of non-missing ranges yields the missing keys.
+    const coveredKeys = new Set<string>();
+    for (const range of health.ranges) {
+      if (range.value.includes(AssetPartitionStatus.MISSING)) {
+        continue;
+      }
+      for (let i = range.start.idx; i <= range.end.idx; i++) {
+        const key = partitionKeys[i];
+        if (key !== undefined) {
+          coveredKeys.add(key);
+        }
+      }
+    }
+    return partitionKeys.filter((key) => !coveredKeys.has(key));
+  }
+  return partitionKeys.filter(
+    (key, idx) => health.runStatusForPartitionKey(key, idx) === undefined,
+  );
+};
+
+const getFailedPartitions = (health: PartitionStatusHealthSource, partitionKeys: string[]) => {
+  if ('ranges' in health) {
+    const failedRangeTerms = health.ranges
+      .filter((range) => range.value.includes(AssetPartitionStatus.FAILED))
+      .map((range) => ({type: 'range' as const, start: range.start.key, end: range.end.key}));
+
+    const failedRangeSelections = convertToPartitionSelection(failedRangeTerms, partitionKeys);
+    if (failedRangeSelections instanceof Error) {
+      return [];
+    }
+    return failedRangeSelections.selectedKeys;
+  }
+  return partitionKeys.filter(
+    (key, idx) => health.runStatusForPartitionKey(key, idx) === RunStatus.FAILURE,
+  );
+};

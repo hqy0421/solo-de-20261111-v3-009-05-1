@@ -1,0 +1,39 @@
+[project]
+name = "quickstart_etl"
+requires-python = ">=3.11,<3.15"
+version = "0.1.0"
+dependencies = [
+    "dagster",
+    "dagster-cloud",
+    "boto3",
+    "pandas",
+    "matplotlib",
+]
+
+[dependency-groups]
+dev = [
+    "dagster-webserver",
+    "dagster-dg-cli",
+    "pytest",
+]
+
+[tool.uv]
+exclude-newer = "48h"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# A packaged install (e.g. a serverless PEX deploy) has no project directory, so
+# `load_from_defs_folder` cannot find the project config unless it ships in the wheel.
+[tool.hatch.build.targets.wheel]
+force-include = { "pyproject.toml" = "pyproject.toml" }
+
+[tool.dg]
+directory_type = "project"
+
+[tool.dg.project]
+root_module = "quickstart_etl"
+registry_modules = [
+    "quickstart_etl.components.*",
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "source": "/docs/getting-started/getting-help",
+    "destination": "/docs/about/community",
+    "permanent": true
+  },
+  {
+    "source": "/docs/getting-started/releases",
+    "destination": "/docs/about/releases",
+    "permanent": true
+  },
+  {
+    "source": "/docs/getting-started/telemetry",
+    "destination": "/docs/about/telemetry",
+    "permanent": true
+  },
+  {
+    "source": "/docs/getting-started/install",
+    "destination": "/docs/getting-started/installation",
+    "permanent": true
+  },
+  {
+    "source": "/docs/getting-started/overview",
+    "destination": "/docs",
+    "permanent": true
+  },
+  {
+    "source": "/docs/community",
+    "destination": "/docs/about/community",
+    "permanent": true
+  },
+  {
+    "source": "/docs/community/contributing",
+    "destination": "/docs/about/contributing",
+    "permanent": true
+  },
+  {
+    "source": "/docs/changelog",
+    "destination": "/docs/about/changelog",
+    "permanent": true
+  }
+]

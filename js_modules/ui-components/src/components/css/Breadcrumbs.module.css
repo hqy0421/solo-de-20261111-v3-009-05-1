@@ -1,0 +1,54 @@
+.breadcrumbsContainer {
+  overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.breadcrumbs {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: max-content;
+  height: auto;
+  min-height: 30px;
+}
+
+/* The list is allowed to shrink to the container so its items truncate rather than
+   overflow: once collapsed, or with two items or fewer where there is nothing to
+   collapse. The measuring path above needs max-content and runs in neither case. */
+.breadcrumbsFit {
+  max-width: 100%;
+}
+
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.separator {
+  color: var(--color-text-lighter);
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+.breadcrumb {
+  text-decoration: none;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.breadcrumbButton {
+  all: unset;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+

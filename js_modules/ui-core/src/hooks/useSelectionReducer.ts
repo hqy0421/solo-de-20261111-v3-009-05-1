@@ -1,0 +1,132 @@
+import {useCallback, useLayoutEffect, useReducer} from 'react';
+
+type State = {
+  checkedIds: Set<string>;
+  lastCheckedId: string | null;
+};
+
+type Action =
+  | {type: 'toggle-one'; payload: {checked: boolean; id: string}}
+  | {
+      type: 'toggle-slice';
+      payload: {checked: boolean; id: string; allIds: string[]};
+    }
+  | {type: 'toggle-many'; payload: {checked: boolean; ids: string[]}}
+  | {type: 'toggle-all'; payload: {checked: boolean; allIds: string[]}}
+  | {type: 'set-all-ids'; payload: {allIds: string[]}};
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case 'set-all-ids': {
+      const allIdsSet = new Set(action.payload.allIds);
+      return {
+        checkedIds: new Set(Array.from(state.checkedIds).filter((id) => allIdsSet.has(id))),
+        lastCheckedId: state.lastCheckedId,
+      };
+    }
+    case 'toggle-one': {
+      const {checked, id} = action.payload;
+      const copy = new Set(state.checkedIds);
+      if (checked) {
+        copy.add(id);
+      } else {
+        copy.delete(id);
+      }
+      return {lastCheckedId: id, checkedIds: copy};
+    }
+
+    case 'toggle-slice': {
+      const {checked, id, allIds} = action.payload;
+      const {lastCheckedId} = state;
+
+      const indexOfLast = lastCheckedId ? allIds.indexOf(lastCheckedId) : -1;
+      const indexOfChecked = allIds.indexOf(id);
+      if (indexOfLast === -1 || indexOfChecked === -1) {
+        return state;
+      }
+
+      const start = Math.min(indexOfLast, indexOfChecked);
+      const end = Math.max(indexOfLast, indexOfChecked);
+      const copy = new Set(state.checkedIds);
+      allIds.slice(start, end + 1).forEach((rangeId) => {
+        if (checked) {
+          copy.add(rangeId);
+        } else {
+          copy.delete(rangeId);
+        }
+      });
+
+      return {
+        lastCheckedId: id,
+        checkedIds: copy,
+      };
+    }
+
+    case 'toggle-many': {
+      const {checked, ids} = action.payload;
+      const copy = new Set(state.checkedIds);
+      ids.forEach((id) => {
+        if (checked) {
+          copy.add(id);
+        } else {
+          copy.delete(id);
+        }
+      });
+      return {
+        lastCheckedId: ids.at(-1) ?? state.lastCheckedId,
+        checkedIds: copy,
+      };
+    }
+
+    case 'toggle-all': {
+      const {checked, allIds} = action.payload;
+      return {
+        lastCheckedId: null,
+        checkedIds: checked ? new Set(allIds) : new Set(),
+      };
+    }
+  }
+};
+
+const initialState: State = {
+  checkedIds: new Set(),
+  lastCheckedId: null,
+};
+
+/** An item's selection change, including whether Shift was held to select a range. */
+export type SelectionToggle = {
+  checked: boolean;
+  shiftKey: boolean;
+};
+
+export function useSelectionReducer(allIds: string[]) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  useLayoutEffect(() => {
+    dispatch({type: 'set-all-ids', payload: {allIds}});
+  }, [allIds]);
+
+  const onToggleFactory = (id: string) => (values: SelectionToggle) => {
+    const {checked, shiftKey} = values;
+    if (shiftKey && state.lastCheckedId) {
+      dispatch({type: 'toggle-slice', payload: {checked, id, allIds}});
+    } else {
+      dispatch({type: 'toggle-one', payload: {checked, id}});
+    }
+  };
+
+  const onToggleAll = (checked: boolean) => {
+    dispatch({type: 'toggle-all', payload: {checked, allIds}});
+  };
+
+  const clearSelection = useCallback(() => {
+    dispatch({type: 'toggle-all', payload: {checked: false, allIds: []}});
+  }, []);
+
+  // Use this rather than calling `onToggleFactory` in a loop, which copies the set once per id.
+  const onToggleMany = useCallback((ids: string[], checked: boolean) => {
+    dispatch({type: 'toggle-many', payload: {checked, ids}});
+  }, []);
+
+  return [state, {onToggleFactory, onToggleAll, onToggleMany, clearSelection}] as const;
+}

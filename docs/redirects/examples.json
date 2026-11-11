@@ -1,0 +1,152 @@
+[
+  {
+    "source": "/docs/guides/build/ml-pipelines",
+    "destination": "/docs/examples/full-pipelines/ml",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/dagster/ml-pipeline",
+    "destination": "/docs/examples/full-pipelines/ml",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/dagster/managing-ml",
+    "destination": "/docs/examples/full-pipelines/ml",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/extract-data",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline/extract-data",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/transform-data",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline/transform-data",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/add-a-resource",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline/add-a-resource",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/data-quality",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline/data-quality",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/partition-asset",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline/partition-asset",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/automate-your-pipeline",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline/automate-your-pipeline",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/visualize-data",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline/visualize-data",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/create-a-sensor",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline/create-a-sensor",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/create-a-sensor-asset",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline/create-a-sensor",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/create-and-materialize-a-downstream-asset",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/create-and-materialize-partitioned-asset",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline/partition-asset",
+    "permanent": true
+  },
+  {
+    "source": "/docs/etl-pipeline-tutorial/ensure-data-quality-with-asset-checks",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline/data-quality",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/bluesky",
+    "destination": "/docs/examples/full-pipelines/bluesky",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/dbt",
+    "destination": "/docs/examples/full-pipelines/dbt",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/full-pipelines/dbt/data",
+    "destination": "/docs/examples/full-pipelines/dbt/ingestion",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/etl-pipeline",
+    "destination": "/docs/examples/full-pipelines/etl-pipeline",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/llm-fine-tuning",
+    "destination": "/docs/examples/full-pipelines/llm-fine-tuning",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/modal",
+    "destination": "/docs/examples/full-pipelines/modal",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/prompt-engineering",
+    "destination": "/docs/examples/full-pipelines/prompt-engineering",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/rag",
+    "destination": "/docs/examples/full-pipelines/rag",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/resource-caching",
+    "destination": "/docs/examples/best-practices/resource-caching",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/shared-module",
+    "destination": "/docs/examples/best-practices/shared-module",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/reference-architectures",
+    "destination": "/docs/examples",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/mini-examples",
+    "destination": "/docs/examples/best-practices",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/mini-examples/:path*",
+    "destination": "/docs/examples/best-practices/:path*",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorials",
+    "destination": "/docs/examples",
+    "permanent": true
+  }
+]

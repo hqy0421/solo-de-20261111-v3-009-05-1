@@ -1,0 +1,1710 @@
+import {render, screen} from '@testing-library/react';
+
+import {AssetSelectionLexer} from '../../asset-selection/generated/AssetSelectionLexer';
+import {AssetSelectionParser} from '../../asset-selection/generated/AssetSelectionParser';
+import {assetSelectionSyntaxSupportedAttributes} from '../../asset-selection/input/util';
+import {createSelectionAutoComplete} from '../SelectionAutoComplete';
+import {createProvider} from '../SelectionAutoCompleteProvider';
+import {createSelectionLinter} from '../createSelectionLinter';
+
+describe('createAssetSelectionHint', () => {
+  const attributesMap = {
+    key: ['asset1', 'asset2', 'asset3', 'prefix/thing1', 'prefix/thing2'],
+    tag: ['tag1', 'tag2', 'tag3', 'key=value1', 'key=value2'],
+    owner: ['marco@dagsterlabs.com', 'team:frontend'],
+    group: ['group1', 'group2', 'star-*-group'],
+    kind: ['kind1', 'kind2'],
+    code_location: ['repo1@location1', 'repo2@location2', 'assumptions@location3'],
+  };
+  const provider = createProvider({
+    attributesMap,
+    primaryAttributeKey: 'key',
+    attributeToIcon: {
+      key: 'magnify_glass',
+      tag: 'magnify_glass',
+      owner: 'magnify_glass',
+      group: 'magnify_glass',
+      kind: 'magnify_glass',
+      code_location: 'magnify_glass',
+    },
+  });
+  const selectionHint = createSelectionAutoComplete(provider);
+
+  function testAutocomplete(testString: string, hintFn = selectionHint) {
+    const cursorIndex = testString.indexOf('|');
+    const string = testString.replace('|', '');
+
+    const hints = hintFn(string, cursorIndex);
+
+    return {
+      list: hints?.list,
+      from: hints?.from,
+      to: hints?.to,
+    };
+  }
+
+  it('should suggest owners after typing owner:', () => {
+    expect(testAutocomplete('owner:|')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: '"marco@dagsterlabs.com"',
+        }),
+        expect.objectContaining({
+          text: '"team:frontend"',
+        }),
+      ],
+      from: 6, // cursor location
+      to: 6, // cursor location
+    });
+  });
+
+  it('should suggest tag names after typing tag:', () => {
+    expect(testAutocomplete('tag:|')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: '"tag1"',
+        }),
+        expect.objectContaining({
+          text: '"tag2"',
+        }),
+        expect.objectContaining({
+          text: '"tag3"',
+        }),
+        expect.objectContaining({
+          text: '"key=value1"',
+        }),
+        expect.objectContaining({
+          text: '"key=value2"',
+        }),
+      ],
+      from: 4, // cursor location
+      to: 4, // cursor location
+    });
+
+    expect(testAutocomplete('tag:"|"')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: '"tag1"',
+        }),
+        expect.objectContaining({
+          text: '"tag2"',
+        }),
+        expect.objectContaining({
+          text: '"tag3"',
+        }),
+        expect.objectContaining({
+          text: '"key=value1"',
+        }),
+        expect.objectContaining({
+          text: '"key=value2"',
+        }),
+      ],
+      from: 4, // cursor location
+      to: 6, // cursor location
+    });
+  });
+
+  it('should suggest logical operators after an expression', () => {
+    expect(testAutocomplete('key:"asset1" |')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: ' and ',
+        }),
+        expect.objectContaining({
+          text: ' or ',
+        }),
+        expect.objectContaining({
+          text: '+',
+        }),
+      ],
+      from: 13, // cursor location
+      to: 13, // cursor location
+    });
+
+    expect(testAutocomplete('key:"asset1"|')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: ' and ',
+        }),
+        expect.objectContaining({
+          text: ' or ',
+        }),
+        expect.objectContaining({
+          text: '+',
+        }),
+      ],
+      from: 12, // cursor location
+      to: 12, // cursor location
+    });
+  });
+
+  it('should filter suggestions based on partial input', () => {
+    expect(testAutocomplete('owner:marco|')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: '"marco@dagsterlabs.com"',
+        }),
+      ],
+      from: 6, // start of value "marco"
+      to: 11, // end of value
+    });
+  });
+
+  it('should suggest possible keywords', () => {
+    // empty case
+    expect(testAutocomplete('|')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({
+          text: 'sinks()',
+        }),
+        expect.objectContaining({
+          text: 'roots()',
+        }),
+        expect.objectContaining({
+          text: 'not ',
+        }),
+        expect.objectContaining({
+          text: '+',
+        }),
+
+        expect.objectContaining({
+          text: '()',
+        }),
+      ],
+      from: 0, // cursor location
+      to: 0, // cursor location
+    });
+
+    // filtered case
+    expect(testAutocomplete('o|')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:"*o*"',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'owner:"marco@dagsterlabs.com"',
+        }),
+        expect.objectContaining({
+          text: 'owner:"team:frontend"',
+        }),
+        expect.objectContaining({
+          text: 'group:"group1"',
+        }),
+        expect.objectContaining({
+          text: 'group:"group2"',
+        }),
+        expect.objectContaining({
+          text: 'group:"star-*-group"',
+        }),
+        expect.objectContaining({
+          text: 'code_location:"repo1@location1"',
+        }),
+        expect.objectContaining({
+          text: 'code_location:"repo2@location2"',
+        }),
+        expect.objectContaining({
+          text: 'code_location:"assumptions@location3"',
+        }),
+      ],
+      from: 0, // start of input
+      to: 1, // cursor location
+    });
+  });
+
+  it('should handle traversal operators correctly', () => {
+    expect(testAutocomplete('+|')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({text: '()'}),
+      ],
+      from: 1, // cursor location
+      to: 1, // cursor location
+    });
+
+    expect(testAutocomplete('* |')).toEqual({
+      from: 2,
+      list: [
+        expect.objectContaining({
+          text: ' and ',
+        }),
+        expect.objectContaining({
+          text: ' or ',
+        }),
+      ],
+      to: 2,
+    });
+
+    expect(testAutocomplete('+ |')).toEqual({
+      from: 2,
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({text: 'not '}),
+        expect.objectContaining({text: '()'}),
+      ],
+      to: 2,
+    });
+
+    expect(testAutocomplete('+|')).toEqual({
+      from: 1,
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({text: '()'}),
+      ],
+      to: 1,
+    });
+  });
+
+  it('should suggest code locations after typing code_location:', () => {
+    expect(testAutocomplete('code_location:|')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: '"repo1@location1"',
+        }),
+        expect.objectContaining({
+          text: '"repo2@location2"',
+        }),
+        expect.objectContaining({
+          text: '"assumptions@location3"',
+        }),
+      ],
+      from: 14,
+      to: 14,
+    });
+  });
+
+  it('should handle incomplete "not" expressions', () => {
+    expect(testAutocomplete('not|')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: ' key:',
+        }),
+        expect.objectContaining({
+          text: ' tag:',
+        }),
+        expect.objectContaining({
+          text: ' owner:',
+        }),
+        expect.objectContaining({
+          text: ' group:',
+        }),
+        expect.objectContaining({
+          text: ' kind:',
+        }),
+        expect.objectContaining({
+          text: ' code_location:',
+        }),
+        expect.objectContaining({text: ' sinks()'}),
+        expect.objectContaining({text: ' roots()'}),
+        expect.objectContaining({text: ' +'}),
+        expect.objectContaining({text: ' ()'}),
+      ],
+      from: 3, // cursor location
+      to: 3, // cursor location
+    });
+
+    expect(testAutocomplete('not |')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({text: '+'}),
+        expect.objectContaining({text: '()'}),
+      ],
+      from: 4, // cursor location
+      to: 4, // cursor location
+    });
+  });
+
+  it('should handle incomplete and expressions', () => {
+    expect(testAutocomplete('key:"asset1" and |')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({text: 'not '}),
+        expect.objectContaining({text: '+'}),
+        expect.objectContaining({text: '()'}),
+      ],
+      from: 17, // cursor location
+      to: 17, // cursor location
+    });
+  });
+
+  it('should handle incomplete or expressions', () => {
+    expect(testAutocomplete('key:"asset1" or |')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({text: 'not '}),
+        expect.objectContaining({text: '+'}),
+        expect.objectContaining({text: '()'}),
+      ],
+      from: 16, // cursor location
+      to: 16, // cursor location
+    });
+  });
+
+  it('should handle incomplete quoted strings gracefully', () => {
+    expect(testAutocomplete('key:"asse|')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: '"asset1"',
+        }),
+        expect.objectContaining({
+          text: '"asset2"',
+        }),
+        expect.objectContaining({
+          text: '"asset3"',
+        }),
+      ],
+      from: 4, // start of value
+      to: 9, // end of value
+    });
+  });
+
+  it('should handle incomplete or expression within function', () => {
+    expect(testAutocomplete('sinks(key:"FIVETRAN/google_ads/ad_group_history" or |)')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({text: 'not '}),
+        expect.objectContaining({text: '+'}),
+        expect.objectContaining({text: '()'}),
+      ],
+      from: 52, // cursor location
+      to: 52, // cursor location
+    });
+  });
+
+  it('should handle incomplete or expression within function with cursor right after the "or"', () => {
+    expect(testAutocomplete('sinks(key:"FIVETRAN/google_ads/ad_group_history" or|)')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: ' key:',
+        }),
+        expect.objectContaining({
+          text: ' tag:',
+        }),
+        expect.objectContaining({
+          text: ' owner:',
+        }),
+        expect.objectContaining({
+          text: ' group:',
+        }),
+        expect.objectContaining({
+          text: ' kind:',
+        }),
+        expect.objectContaining({
+          text: ' code_location:',
+        }),
+        expect.objectContaining({text: ' sinks()'}),
+        expect.objectContaining({text: ' roots()'}),
+        expect.objectContaining({text: ' not '}),
+        expect.objectContaining({text: ' +'}),
+        expect.objectContaining({text: ' ()'}),
+      ],
+      from: 51, // cursor location
+      to: 51, // cursor location
+    });
+  });
+
+  it('should suggest tag values to the right of colon of an attribute expression inside of an IncompleteAttributeExpression, OrExpression, and ParenthesizedExpression', () => {
+    expect(testAutocomplete('sinks(key:"FIVETRAN/google_ads/ad_group_history" or key:|)')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: '"asset1"',
+        }),
+        expect.objectContaining({
+          text: '"asset2"',
+        }),
+        expect.objectContaining({
+          text: '"asset3"',
+        }),
+        expect.objectContaining({
+          text: '"prefix/thing1"',
+        }),
+        expect.objectContaining({
+          text: '"prefix/thing2"',
+        }),
+      ],
+      from: 56, // cursor location
+      to: 56, // cursor location
+    });
+  });
+
+  it('suggestions after downtraversal "+"', () => {
+    expect(testAutocomplete('key:"value"+|')).toEqual({
+      list: [expect.objectContaining({text: ' and '}), expect.objectContaining({text: ' or '})],
+      from: 12, // cursor location
+      to: 12, // cursor location
+    });
+
+    // UpAndDownTraversal
+    expect(testAutocomplete('+key:"value"|+')).toEqual({
+      list: [
+        expect.objectContaining({text: ' and '}),
+        expect.objectContaining({text: ' or '}),
+        expect.objectContaining({text: '+'}),
+      ],
+      from: 12, // cursor location
+      to: 12, // cursor location
+    });
+
+    // DownTraversal
+    expect(testAutocomplete('key:"value"|+')).toEqual({
+      list: [
+        expect.objectContaining({text: ' and '}),
+        expect.objectContaining({text: ' or '}),
+        expect.objectContaining({text: '+'}),
+      ],
+      from: 11, // cursor location
+      to: 11, // cursor location
+    });
+  });
+
+  it('suggestions after IncompleteOrExpression chain', () => {
+    expect(
+      testAutocomplete('key:"test" or key:"FIVETRAN/google_ads/ad_group_history"+ or |'),
+    ).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({text: 'not '}),
+        expect.objectContaining({text: '+'}),
+        expect.objectContaining({text: '()'}),
+      ],
+      from: 61, // cursor position
+      to: 61, // cursor position
+    });
+  });
+
+  it('suggestions inside parenthesized expression', () => {
+    expect(testAutocomplete('(|)')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({text: 'not '}),
+        expect.objectContaining({text: '+'}),
+        expect.objectContaining({text: '()'}),
+      ],
+      from: 1, // cursor location
+      to: 1, // cursor location
+    });
+  });
+
+  it('suggestions outside parenthesized expression before', () => {
+    expect(testAutocomplete('|()')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({text: 'not '}),
+        expect.objectContaining({text: '+'}),
+        expect.objectContaining({text: '()'}),
+      ],
+      from: 0, // cursor position
+      to: 0, // cursor position
+    });
+  });
+
+  it('suggestions outside parenthesized expression after', () => {
+    expect(testAutocomplete('()|')).toEqual({
+      list: [
+        expect.objectContaining({text: ' and '}),
+        expect.objectContaining({text: ' or '}),
+        expect.objectContaining({text: '+'}),
+      ],
+      from: 2, // cursor position
+      to: 2, // cursor position
+    });
+  });
+
+  it('suggestions within parenthesized expression', () => {
+    expect(testAutocomplete('(tag:"dagster/kind/dlt"|)')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: ' and ',
+        }),
+        expect.objectContaining({
+          text: ' or ',
+        }),
+        expect.objectContaining({text: '+'}),
+      ],
+      from: 23, // cursor position
+      to: 23, // cursor position
+    });
+
+    expect(testAutocomplete('sinks(key:"set" or key:"asset"|)')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: ' and ',
+        }),
+        expect.objectContaining({
+          text: ' or ',
+        }),
+        expect.objectContaining({text: '+'}),
+      ],
+      from: 30, // cursor position
+      to: 30, // cursor position
+    });
+
+    expect(testAutocomplete('sinks(key:"asset" or key:"s|et2")')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: '"asset2"',
+        }),
+      ],
+      from: 25, // start of value
+      to: 31, // end of value
+    });
+
+    expect(testAutocomplete('sinks(key:"sset1"| or key:"set")')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: ' and ',
+        }),
+        expect.objectContaining({
+          text: ' or ',
+        }),
+        expect.objectContaining({text: '+'}),
+      ],
+      from: 17, // cursor position
+      to: 17, // cursor position
+    });
+  });
+
+  it('makes suggestions around traversals', () => {
+    expect(testAutocomplete('sinks()+2|')).toEqual({
+      list: [expect.objectContaining({text: ' and '}), expect.objectContaining({text: ' or '})],
+      from: 9, // start of value
+      to: 9, // end of value
+    });
+
+    expect(testAutocomplete('sinks()+|+')).toEqual({
+      list: [expect.objectContaining({text: ' and '}), expect.objectContaining({text: ' or '})],
+      from: 8, // start of value
+      to: 8, // end of value
+    });
+
+    expect(testAutocomplete('|2+sinks()+2')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: '()',
+        }),
+      ],
+      from: 0, // start of value
+      to: 0, // end of value
+    });
+
+    expect(testAutocomplete('2|+sinks()+2')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: '()',
+        }),
+      ],
+      from: 1, // start of value
+      to: 1, // end of value
+    });
+  });
+
+  it('makes suggestions for IncompleteExpression inside of the ParenthesizedExpression', () => {
+    expect(testAutocomplete('(key:tag and |)')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({
+          text: 'not ',
+        }),
+        expect.objectContaining({text: '+'}),
+        expect.objectContaining({
+          text: '()',
+        }),
+      ],
+      from: 13,
+      to: 13,
+    });
+
+    expect(testAutocomplete('(key:tag and|)')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: ' key:',
+        }),
+        expect.objectContaining({
+          text: ' tag:',
+        }),
+        expect.objectContaining({
+          text: ' owner:',
+        }),
+        expect.objectContaining({
+          text: ' group:',
+        }),
+        expect.objectContaining({
+          text: ' kind:',
+        }),
+        expect.objectContaining({
+          text: ' code_location:',
+        }),
+        expect.objectContaining({text: ' sinks()'}),
+        expect.objectContaining({text: ' roots()'}),
+        expect.objectContaining({
+          text: ' not ',
+        }),
+        expect.objectContaining({text: ' +'}),
+        expect.objectContaining({
+          text: ' ()',
+        }),
+      ],
+      from: 12,
+      to: 12,
+    });
+
+    expect(testAutocomplete('(key:tag and| )')).toEqual({
+      list: [
+        expect.objectContaining({
+          text: ' key:',
+        }),
+        expect.objectContaining({
+          text: ' tag:',
+        }),
+        expect.objectContaining({
+          text: ' owner:',
+        }),
+        expect.objectContaining({
+          text: ' group:',
+        }),
+        expect.objectContaining({
+          text: ' kind:',
+        }),
+        expect.objectContaining({
+          text: ' code_location:',
+        }),
+        expect.objectContaining({text: ' sinks()'}),
+        expect.objectContaining({text: ' roots()'}),
+        expect.objectContaining({
+          text: ' not ',
+        }),
+        expect.objectContaining({text: ' +'}),
+        expect.objectContaining({
+          text: ' ()',
+        }),
+      ],
+      from: 12,
+      to: 12,
+    });
+  });
+
+  it('suggestions within incomplete function call expression', () => {
+    // Note: After antlr4ng migration, the ')' suggestion is not included
+    // This is a minor behavioral difference in how unclosed parentheses are detected
+    expect(
+      testAutocomplete(
+        '(sinks(key:"FIVETRAN/google_ads/ad_group_history" or (key:"aws_cost_report"+2)|',
+      ),
+    ).toEqual({
+      from: 78,
+      list: [
+        expect.objectContaining({
+          text: ' and ',
+        }),
+        expect.objectContaining({
+          text: ' or ',
+        }),
+        expect.objectContaining({text: '+'}),
+      ],
+      to: 78,
+    });
+  });
+
+  it('makes suggestion in whitespace after or token in between two incomplete or expressions', () => {
+    expect(testAutocomplete('key:"aws_cost_report" or |or key:"aws_cost_report"')).toEqual({
+      from: 25,
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({text: 'sinks()'}),
+        expect.objectContaining({text: 'roots()'}),
+        expect.objectContaining({
+          text: 'not ',
+        }),
+        expect.objectContaining({text: '+'}),
+        expect.objectContaining({
+          text: '()',
+        }),
+      ],
+      to: 25,
+    });
+  });
+
+  it('suggests and/or logical operators', () => {
+    expect(testAutocomplete('key:"aws_cost_report" o|r and key:"aws_cost_report"')).toEqual({
+      from: 22,
+      list: [
+        expect.objectContaining({
+          text: 'or',
+        }),
+        expect.objectContaining({
+          text: 'and',
+        }),
+      ],
+      to: 24,
+    });
+
+    expect(testAutocomplete('key:"aws_cost_report" a|nd and key:"aws_cost_report"')).toEqual({
+      from: 22,
+      list: [
+        expect.objectContaining({
+          text: 'and',
+        }),
+        expect.objectContaining({
+          text: 'or',
+        }),
+      ],
+      to: 25,
+    });
+  });
+
+  it('suggests attribute names when cursor left of the colon', () => {
+    expect(testAutocomplete('tag:"dagster/kind/fivetran" or t|:"a"')).toEqual({
+      from: 31,
+      list: [
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+      ],
+      to: 33,
+    });
+  });
+
+  it('suggests attribute values when cursor left of the double quote', () => {
+    expect(testAutocomplete('tag:"tag|"')).toEqual({
+      from: 4,
+      list: [
+        expect.objectContaining({text: '"tag1"'}),
+        expect.objectContaining({text: '"tag2"'}),
+        expect.objectContaining({text: '"tag3"'}),
+      ],
+      to: 9,
+    });
+  });
+
+  it('handles malformed input in the middle of the selection', () => {
+    expect(
+      testAutocomplete(
+        'owner:"marco@dagsterlabs.com" or aiufhaifuhaguihaiugh k|ey:"column_schema_asset_2"',
+      ),
+    ).toEqual({
+      from: 54,
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+      ],
+      to: 58,
+    });
+
+    expect(
+      testAutocomplete('owner:"marco@dagsterlabs.com" or aiufhaifuhaguihaiugh key:"|"'),
+    ).toEqual({
+      from: 58,
+      list: [
+        expect.objectContaining({text: '"asset1"'}),
+        expect.objectContaining({text: '"asset2"'}),
+        expect.objectContaining({text: '"asset3"'}),
+        expect.objectContaining({text: '"prefix/thing1"'}),
+        expect.objectContaining({text: '"prefix/thing2"'}),
+      ],
+      to: 60,
+    });
+  });
+
+  it('handles complex ands/ors', () => {
+    expect(testAutocomplete('key:"value"+ or tag:"value"+ and owner:"owner" and |')).toEqual({
+      from: 51,
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({
+          text: 'sinks()',
+        }),
+        expect.objectContaining({
+          text: 'roots()',
+        }),
+        expect.objectContaining({
+          text: 'not ',
+        }),
+        expect.objectContaining({
+          text: '+',
+        }),
+        expect.objectContaining({
+          text: '()',
+        }),
+      ],
+      to: 51,
+    });
+  });
+
+  it('does not suggest + after +', () => {
+    expect(testAutocomplete('key:"value"+|')).toEqual({
+      from: 12,
+      list: [expect.objectContaining({text: ' and '}), expect.objectContaining({text: ' or '})],
+      to: 12,
+    });
+  });
+
+  it('suggests things for the value after an upstream traversal', () => {
+    expect(testAutocomplete('+ass|')).toEqual({
+      from: 1,
+      list: [
+        expect.objectContaining({text: 'key:"*ass*"'}),
+        expect.objectContaining({text: 'key:"asset1"'}),
+        expect.objectContaining({text: 'key:"asset2"'}),
+        expect.objectContaining({text: 'key:"asset3"'}),
+        expect.objectContaining({text: 'code_location:"assumptions@location3"'}),
+      ],
+      to: 4,
+    });
+  });
+
+  it('value suggestions should replace entire key=value segment in tag:key=value', () => {
+    expect(testAutocomplete('tag:k|ey=value or key:"test"')).toEqual({
+      from: 4,
+      list: [
+        expect.objectContaining({text: '"key=value1"'}),
+        expect.objectContaining({text: '"key=value2"'}),
+      ],
+      to: 13,
+    });
+
+    expect(testAutocomplete('tag:key|=value or key:"test"')).toEqual({
+      from: 4,
+      list: [
+        expect.objectContaining({text: '"key=value1"'}),
+        expect.objectContaining({text: '"key=value2"'}),
+      ],
+      to: 13,
+    });
+
+    expect(testAutocomplete('tag:key=|value or key:"test"')).toEqual({
+      from: 4,
+      list: [
+        expect.objectContaining({text: '"key=value1"'}),
+        expect.objectContaining({text: '"key=value2"'}),
+      ],
+      to: 13,
+    });
+    expect(testAutocomplete('tag:key=val|ue or key:"test"')).toEqual({
+      from: 4,
+      list: [
+        expect.objectContaining({text: '"key=value1"'}),
+        expect.objectContaining({text: '"key=value2"'}),
+      ],
+      to: 13,
+    });
+    expect(testAutocomplete('tag:key=value| or key:"test"')).toEqual({
+      from: 4,
+      list: [
+        expect.objectContaining({text: '"key=value1"'}),
+        expect.objectContaining({text: '"key=value2"'}),
+      ],
+      to: 13,
+    });
+  });
+
+  it('should be case insensitive', () => {
+    expect(testAutocomplete('REPO|')).toEqual({
+      from: 0,
+      list: [
+        expect.objectContaining({text: 'key:"*REPO*"'}),
+        expect.objectContaining({text: 'code_location:"repo1@location1"'}),
+        expect.objectContaining({text: 'code_location:"repo2@location2"'}),
+      ],
+      to: 4,
+    });
+  });
+
+  it('Allows slashes in identifiers', () => {
+    expect(testAutocomplete('prefix/th|ing')).toEqual({
+      from: 0,
+      list: [
+        expect.objectContaining({text: 'key:"*prefix/thing*"'}),
+        expect.objectContaining({text: 'key:"prefix/thing1"'}),
+        expect.objectContaining({text: 'key:"prefix/thing2"'}),
+      ],
+      to: 12,
+    });
+  });
+
+  it('Allows numbers in identifiers', () => {
+    expect(testAutocomplete('1|')).toEqual({
+      from: 0,
+      list: [
+        expect.objectContaining({text: 'key:"*1*"'}),
+        expect.objectContaining({text: 'key:"asset1"'}),
+        expect.objectContaining({text: 'key:"prefix/thing1"'}),
+        expect.objectContaining({text: 'tag:"tag1"'}),
+        expect.objectContaining({text: 'tag:"key=value1"'}),
+        expect.objectContaining({text: 'group:"group1"'}),
+        expect.objectContaining({text: 'kind:"kind1"'}),
+        expect.objectContaining({text: 'code_location:"repo1@location1"'}),
+      ],
+      to: 1,
+    });
+  });
+
+  it('uses primary attribute key for substring suggestions', () => {
+    const attributesMap = {
+      key: [],
+      tag: [],
+      owner: [],
+      group: [],
+      kind: [],
+      code_location: [],
+    };
+    const provider = createProvider({
+      attributesMap,
+      primaryAttributeKey: 'tag',
+      attributeToIcon: {
+        key: 'magnify_glass',
+        tag: 'magnify_glass',
+        owner: 'magnify_glass',
+        group: 'magnify_glass',
+        kind: 'magnify_glass',
+        code_location: 'magnify_glass',
+      },
+    });
+    const selectionHint = createSelectionAutoComplete(provider);
+
+    expect(testAutocomplete('test|', selectionHint)).toEqual({
+      from: 0,
+      list: [expect.objectContaining({text: 'tag:"*test*"'})],
+      to: 4,
+    });
+  });
+
+  it('Treats * as a wildcard within key attribute', () => {
+    expect(testAutocomplete('key:"asset*|"')).toEqual({
+      from: 4,
+      list: [
+        expect.objectContaining({
+          text: '"asset1"',
+        }),
+        expect.objectContaining({
+          text: '"asset2"',
+        }),
+        expect.objectContaining({
+          text: '"asset3"',
+        }),
+      ],
+      to: 12,
+    });
+    expect(testAutocomplete('key:asset*|')).toEqual({
+      from: 4,
+      list: [
+        expect.objectContaining({
+          text: '"asset1"',
+        }),
+        expect.objectContaining({
+          text: '"asset2"',
+        }),
+        expect.objectContaining({
+          text: '"asset3"',
+        }),
+      ],
+      to: 10,
+    });
+
+    expect(testAutocomplete('key:*set|')).toEqual({
+      from: 4,
+      list: [
+        expect.objectContaining({
+          text: '"asset1"',
+        }),
+        expect.objectContaining({
+          text: '"asset2"',
+        }),
+        expect.objectContaining({
+          text: '"asset3"',
+        }),
+      ],
+      to: 8,
+    });
+  });
+
+  it('Ignores * in other attribute', () => {
+    expect(testAutocomplete('group:"*|"')).toEqual({
+      from: 6,
+      list: [
+        expect.objectContaining({
+          text: '"star-*-group"',
+        }),
+      ],
+      to: 9,
+    });
+    expect(testAutocomplete('owner:"*|"')).toEqual({
+      from: 6,
+      list: [
+        expect.objectContaining({
+          type: 'no-match',
+        }),
+      ],
+      to: 9,
+    });
+    expect(testAutocomplete('tag:"*|"')).toEqual({
+      from: 4,
+      list: [
+        expect.objectContaining({
+          type: 'no-match',
+        }),
+      ],
+      to: 7,
+    });
+  });
+
+  it('should not suggest + after + if supportsTraversal is false', () => {
+    const provider = createProvider({
+      attributesMap: {
+        key: [],
+        tag: [],
+        owner: [],
+        group: [],
+        kind: [],
+        code_location: [],
+      },
+      primaryAttributeKey: 'tag',
+      attributeToIcon: {
+        key: 'magnify_glass',
+        tag: 'magnify_glass',
+        owner: 'magnify_glass',
+        group: 'magnify_glass',
+        kind: 'magnify_glass',
+        code_location: 'magnify_glass',
+      },
+    });
+    const selectionHint = createSelectionAutoComplete({
+      ...provider,
+      supportsTraversal: false,
+    });
+    expect(testAutocomplete('key:"value"|', selectionHint)).toEqual({
+      from: 11,
+      // Should not suggest "+"
+      list: [expect.objectContaining({text: ' and '}), expect.objectContaining({text: ' or '})],
+      to: 11,
+    });
+  });
+
+  it('should not suggest a wildcard search without a primary attribute', () => {
+    const selectionHint = createSelectionAutoComplete(
+      createProvider({
+        attributesMap,
+        attributeToIcon: {
+          key: 'magnify_glass',
+          tag: 'magnify_glass',
+          owner: 'magnify_glass',
+          group: 'magnify_glass',
+          kind: 'magnify_glass',
+          code_location: 'magnify_glass',
+        },
+      }),
+    );
+    const texts = testAutocomplete('asset|', selectionHint).list?.map(({text}) => text);
+
+    expect(testAutocomplete('asset|').list).toContainEqual(
+      expect.objectContaining({text: 'key:"*asset*"'}),
+    );
+    expect(texts).not.toContainEqual(expect.stringContaining('*'));
+    expect(texts).toContain('key:"asset1"');
+  });
+
+  it('should not suggest not if supportsNot is false', () => {
+    const selectionHint = createSelectionAutoComplete({...provider, supportsNot: false});
+
+    expect(testAutocomplete('n|').list).toContainEqual(expect.objectContaining({text: 'not '}));
+    expect(testAutocomplete('n|', selectionHint).list).not.toContainEqual(
+      expect.objectContaining({text: 'not '}),
+    );
+  });
+
+  it('should not suggest functions if empty array passed in', () => {
+    const provider = createProvider({
+      attributesMap: {
+        key: [],
+        tag: [],
+        owner: [],
+        group: [],
+        kind: [],
+        code_location: [],
+      },
+      functions: [],
+      primaryAttributeKey: 'tag',
+      attributeToIcon: {
+        key: 'magnify_glass',
+        tag: 'magnify_glass',
+        owner: 'magnify_glass',
+        group: 'magnify_glass',
+        kind: 'magnify_glass',
+        code_location: 'magnify_glass',
+      },
+    });
+    const selectionHint = createSelectionAutoComplete(provider);
+    expect(testAutocomplete('|', selectionHint)).toEqual({
+      list: [
+        expect.objectContaining({
+          text: 'key:',
+        }),
+        expect.objectContaining({
+          text: 'tag:',
+        }),
+        expect.objectContaining({
+          text: 'owner:',
+        }),
+        expect.objectContaining({
+          text: 'group:',
+        }),
+        expect.objectContaining({
+          text: 'kind:',
+        }),
+        expect.objectContaining({
+          text: 'code_location:',
+        }),
+        expect.objectContaining({
+          text: 'not ',
+        }),
+        expect.objectContaining({
+          text: '+',
+        }),
+        expect.objectContaining({
+          text: '()',
+        }),
+      ],
+      from: 0, // cursor location
+      to: 0, // cursor location
+    });
+  });
+
+  const hintWithOwners = createSelectionAutoComplete(
+    createProvider({
+      attributesMap: {key: ['asset1'], owner: ['ben@x.com']},
+      primaryAttributeKey: 'key',
+      attributeToIcon: {key: 'magnify_glass', owner: 'magnify_glass'},
+    }),
+  );
+
+  it.each([
+    {input: '  own|', text: 'owner:', from: 2, to: 5},
+    {input: ' owner:b|', text: '"ben@x.com"', from: 7, to: 8},
+    {input: '\t\r\nown|', text: 'owner:', from: 3, to: 6},
+  ])('suggests past leading whitespace in $input', ({input, text, from, to}) => {
+    expect(testAutocomplete(input, hintWithOwners)).toEqual({
+      list: expect.arrayContaining([expect.objectContaining({text})]),
+      from,
+      to,
+    });
+  });
+
+  const hintWithRejectedValues = createSelectionAutoComplete(
+    createProvider({
+      attributesMap: {key: ['dbt-model'], owner: ['ben@dagsterlabs.com'], tag: ['a-b=c-d']},
+      primaryAttributeKey: 'key',
+      attributeToIcon: {key: 'magnify_glass', owner: 'magnify_glass', tag: 'magnify_glass'},
+    }),
+  );
+
+  it.each([
+    {input: 'owner:ben@dag|', text: '"ben@dagsterlabs.com"', from: 6, to: 13},
+    {input: 'tag:a-|b=c-d', text: '"a-b=c-d"', from: 4, to: 11},
+  ])('completes the whole value in $input', ({input, text, from, to}) => {
+    expect(testAutocomplete(input, hintWithRejectedValues)).toEqual({
+      list: [expect.objectContaining({text})],
+      from,
+      to,
+    });
+  });
+
+  it('suggests a substring match for a value with a character the grammar rejects', () => {
+    expect(testAutocomplete('dbt-mo|', hintWithRejectedValues)).toEqual({
+      list: [
+        expect.objectContaining({text: 'key:"*dbt-mo*"'}),
+        expect.objectContaining({text: 'key:"dbt-model"'}),
+      ],
+      from: 0,
+      to: 6,
+    });
+  });
+
+  it.each([
+    {input: 'a\\b|', to: 3},
+    {input: '"a-b"|', to: 5},
+  ])('does not suggest a substring match for $input', ({input, to}) => {
+    expect(testAutocomplete(input, hintWithRejectedValues)).toEqual({list: [], from: 0, to});
+  });
+
+  const hintForQuoting = createSelectionAutoComplete(
+    createProvider({
+      attributesMap: {
+        key: ['asset1'],
+        owner: ['ben@dagsterlabs.com'],
+        tag: [{key: 'team', value: 'data'}],
+        column_tag: [{key: 'team', value: 'data'}],
+        id: [],
+        status: ['SUCCESS', 'FAILURE'],
+      },
+      primaryAttributeKey: 'key',
+      attributeToIcon: {
+        key: 'magnify_glass',
+        owner: 'magnify_glass',
+        tag: 'magnify_glass',
+        column_tag: 'magnify_glass',
+        id: 'magnify_glass',
+        status: 'magnify_glass',
+      },
+    }),
+  );
+
+  it('offers the value in quotes in place of no match', async () => {
+    const {list, from, to} = testAutocomplete('owner:zzz@q|', hintForQuoting);
+    expect({list, from, to}).toEqual({
+      list: [expect.objectContaining({text: '"zzz@q"', trailingSpace: true})],
+      from: 6,
+      to: 11,
+    });
+    expect(list?.[0]).not.toHaveProperty('type');
+
+    render(list?.[0]?.jsx);
+    expect(await screen.findByText('Add quotes:')).toBeVisible();
+    expect(await screen.findByTitle('owner:"zzz@q"')).toBeVisible();
+  });
+
+  it.each([
+    {input: 'tag:a-|b=c-d', text: '"a-b"="c-d"', from: 4, to: 11},
+    {input: 'tag:a-b=c-|d', text: '"a-b"="c-d"', from: 4, to: 11},
+    {input: 'tag:a-b=c-d|', text: '"a-b"="c-d"', from: 4, to: 11},
+    {input: 'tag:"a-b"=c-d|', text: '"a-b"="c-d"', from: 4, to: 13},
+    {input: 'tag:a-b="c-|d"', text: '"a-b"="c-d"', from: 4, to: 13},
+    {input: 'tag:a-b=<null>|', text: '"a-b"=<null>', from: 4, to: 14},
+    {input: 'id:12ab-34cd|', text: '"12ab-34cd"', from: 3, to: 12},
+    {input: 'key:a-b*|', text: '"a-b*"', from: 4, to: 8},
+    {input: 'column_tag:a-b=c-d|', text: '"a-b"="c-d"', from: 11, to: 18},
+    {input: 'status:bad-value|', text: '"bad-value"', from: 7, to: 16},
+    {input: '(owner:a-|b)', text: '"a-b"', from: 7, to: 10},
+    {input: 'owner:a-|b and key:x', text: '"a-b"', from: 6, to: 9},
+    {input: 'key:a-|b+', text: '"a-b"', from: 4, to: 7},
+    {input: 'key:a-|b+2 and key:y', text: '"a-b"', from: 4, to: 7},
+  ])('offers $text for $input', ({input, text, from, to}) => {
+    expect(testAutocomplete(input, hintForQuoting)).toEqual({
+      list: [expect.objectContaining({text})],
+      from,
+      to,
+    });
+  });
+
+  it('suggests operators after a closing quote even when the other value needs quotes', () => {
+    expect(testAutocomplete('tag:a-b="c-d"|', hintForQuoting)).toEqual({
+      list: [
+        expect.objectContaining({text: ' and '}),
+        expect.objectContaining({text: ' or '}),
+        expect.objectContaining({text: '+'}),
+      ],
+      from: 13,
+      to: 13,
+    });
+  });
+
+  it.each([
+    {input: 'nope:zzz@q|', from: 5, to: 10},
+    {input: 'owner:zzz|', from: 6, to: 9},
+    {input: 'owner:zzz\\q|', from: 6, to: 11},
+    {input: 'owner:a\u200bb|', from: 6, to: 9},
+    {input: 'owner:a\u00a0b|', from: 6, to: 9},
+    {input: 'owner:a-b=c-d|', from: 6, to: 13},
+    {input: 'owner:a-b*|', from: 6, to: 10},
+    {input: 'tag:a-b=c*|', from: 4, to: 10},
+    {input: 'tag:a*=c-d|', from: 4, to: 10},
+    {input: 'owner:|zzz@q', from: 6, to: 6},
+    {input: 'tag:a-|b="c', from: 4, to: 10},
+    {input: 'tag:a-|b="c\\d"', from: 4, to: 10},
+    {input: 'owner:alice-te|st+foo@example.com', from: 6, to: 16},
+    {input: 'owner:a-|b:c', from: 6, to: 9},
+    {input: 'owner:a-|b,c', from: 6, to: 9},
+    {input: 'owner:a-|b(', from: 6, to: 9},
+    {input: 'tag:a-|b=c:d', from: 4, to: 9},
+    {input: 'key:a-|b+foo', from: 4, to: 7},
+  ])('shows only no match for $input', ({input, from, to}) => {
+    expect(testAutocomplete(input, hintForQuoting)).toEqual({
+      list: [expect.objectContaining({type: 'no-match'})],
+      from,
+      to,
+    });
+  });
+
+  const hintWithTagPairs = createSelectionAutoComplete(
+    createProvider({
+      attributesMap: {
+        key: ['asset1'],
+        owner: ['alice@example.com'],
+        tag: [
+          {key: 'team', value: ''},
+          {key: 'team', value: 'data'},
+          {key: 'team', value: 'dev'},
+          {key: 'myteam', value: 'x'},
+          {key: 'env', value: 'prod'},
+        ],
+      },
+      primaryAttributeKey: 'key',
+      attributeToIcon: {key: 'magnify_glass', owner: 'magnify_glass', tag: 'magnify_glass'},
+    }),
+  );
+
+  it.each([
+    {input: 'tag:team=|', from: 4, to: 9},
+    {input: 'tag:"team"=|', from: 4, to: 11},
+    {input: 'tag:team=d|', from: 4, to: 10},
+    {input: 'tag:Team=|', from: 4, to: 9},
+    {input: 'tag:team="|', from: 4, to: 10},
+    {input: 'tag:"team"="|', from: 4, to: 12},
+  ])("suggests only the key's values for $input", ({input, from, to}) => {
+    expect(testAutocomplete(input, hintWithTagPairs)).toEqual({
+      list: [
+        expect.objectContaining({text: '"team"="data"'}),
+        expect.objectContaining({text: '"team"="dev"'}),
+      ],
+      from,
+      to,
+    });
+  });
+
+  it("names the whole pair when none of the key's values match", async () => {
+    const {list} = testAutocomplete('tag:"enrollments"=fff|', hintWithTagPairs);
+    render(list?.[0]?.jsx);
+    expect(await screen.findByText('tag:"enrollments"="fff"')).toBeVisible();
+  });
+
+  it("names a bare <null> without quotes when none of the key's values match", async () => {
+    const {list} = testAutocomplete('tag:team=<null>|', hintWithTagPairs);
+    render(list?.[0]?.jsx);
+    expect(await screen.findByText('tag:"team"=<null>')).toBeVisible();
+  });
+
+  it('suggests nothing after = on an attribute that takes no pairs', () => {
+    expect(testAutocomplete('owner:a=|', hintWithTagPairs).list).toEqual([]);
+  });
+
+  it('completes a pair after = into text the asset selection accepts', () => {
+    const lint = createSelectionLinter({
+      Lexer: AssetSelectionLexer,
+      Parser: AssetSelectionParser,
+      supportedAttributes: assetSelectionSyntaxSupportedAttributes,
+    });
+    const input = 'tag:team=';
+    const {list, from, to} = testAutocomplete(`${input}|`, hintWithTagPairs);
+    const text = `${input.slice(0, from)}${list?.[0]?.text}${input.slice(to)}`;
+
+    expect(text).toBe('tag:"team"="data"');
+    expect(lint(text)).toEqual([]);
+  });
+
+  it.each(['| own', ' | own'])(
+    'suggests as for an empty input when the cursor is in leading whitespace: %s',
+    (input) => {
+      const cursorIndex = input.indexOf('|');
+      expect(testAutocomplete(input, hintWithOwners)).toEqual({
+        list: testAutocomplete('|', hintWithOwners).list,
+        from: cursorIndex,
+        to: cursorIndex,
+      });
+    },
+  );
+
+  it('shows the mapped label on an attribute row', async () => {
+    const hintWithLabels = createSelectionAutoComplete(
+      createProvider({
+        attributesMap: {snapshot_id: []},
+        attributeToIcon: {snapshot_id: 'magnify_glass'},
+        attributeToLabel: {snapshot_id: 'Snapshot ID'},
+      }),
+    );
+    const {list} = testAutocomplete('snap|', hintWithLabels);
+    render(list?.[0]?.jsx);
+    expect(await screen.findByText('Snapshot ID')).toBeVisible();
+  });
+
+  describe('formatValue', () => {
+    const hintWithFormat = createSelectionAutoComplete(
+      createProvider({
+        attributesMap: {owner: ['alice'], tag: [{key: 'team', value: 'data'}, {key: 'solo'}]},
+        attributeToIcon: {owner: 'magnify_glass', tag: 'magnify_glass'},
+        formatValue: (value) => `<${value}>`,
+      }),
+    );
+
+    const only = (text: string) => [expect.objectContaining({text})];
+    const including = (text: string) => expect.arrayContaining([expect.objectContaining({text})]);
+
+    it.each([
+      {site: 'value row', input: 'owner:al|', expected: only('<alice>')},
+      {site: 'tag pair', input: 'tag:te|', expected: only('<team>=<data>')},
+      {site: 'key-only tag', input: 'tag:so|', expected: only('<solo>')},
+      {site: 'value row from bare text', input: 'alic|', expected: including('owner:<alice>')},
+      {site: 'tag pair from bare text', input: 'dat|', expected: including('tag:<team>=<data>')},
+      {site: 'key-only tag from bare text', input: 'sol|', expected: including('tag:<solo>')},
+    ])('inserts the $site in the form formatValue writes', ({input, expected}) => {
+      expect(testAutocomplete(input, hintWithFormat).list).toEqual(expected);
+    });
+
+    it('renders a no-match value row in the form formatValue writes', async () => {
+      const {list} = testAutocomplete('owner:zzz|', hintWithFormat);
+      render(list?.[0]?.jsx);
+      expect(await screen.findByText('owner:<zzz>')).toBeVisible();
+    });
+  });
+});

@@ -1,0 +1,127 @@
+[
+  {
+    "source": "/docs/tutorial/introduction",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/setup",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/writing-your-first-asset",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/building-an-asset-graph",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/scheduling-your-pipeline",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/connecting-to-external-services",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/intro-tutorial/single-op-job",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/intro-tutorial/single-solid-pipeline",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/intro-tutorial/connecting-ops",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/intro-tutorial/connecting-solids",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/intro-tutorial/testable",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/intro-tutorial/configuring-solids",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/advanced-tutorial/configuring-solids",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/advanced-tutorial/configuring-ops",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/advanced-tutorial/pipelines",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/advanced-tutorial/types",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/advanced-tutorial/resources",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/advanced-tutorial/repositories",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/advanced-tutorial/scheduling",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/advanced-tutorial/materializations",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/dagster/example_project",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/dagster/asset-tutorial",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial/saving-your-data",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/labs/components/components-etl-pipeline-tutorial",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/tutorial",
+    "destination": "/docs/dagster-basics-tutorial",
+    "permanent": true
+  }
+]

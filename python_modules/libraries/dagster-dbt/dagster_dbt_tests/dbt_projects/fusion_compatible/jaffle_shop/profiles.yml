@@ -1,0 +1,16 @@
+jaffle_shop:
+  target: "{{ env_var('DAGSTER_DBT_FUSION_TARGET', 'snowflake') }}"
+  outputs:
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: BUILDKITE
+      private_key: "{{ env_var('SNOWFLAKE_BUILDKITE_PRIVATE_KEY') }}"
+      client_session_keep_alive: False
+      database: TESTDB
+      schema: TESTSCHEMA
+      warehouse: BUILDKITE
+    duckdb:
+      type: duckdb
+      path: target/local.duckdb
+      schema: dev

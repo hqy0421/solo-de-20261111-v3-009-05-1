@@ -1,0 +1,11 @@
+# 3rd party CLI for DuckDB
+duckcli>=0.2.1
+
+# Database adapter
+dbt-duckdb>=1.10
+
+# dbt Core
+dbt-core>=1.10
+
+# extra features
+sqlfluff>=3

@@ -1,0 +1,787 @@
+[
+  {
+    "source": "/docs/deploying/celery",
+    "destination": "/docs/deployment/oss/deployment-options/kubernetes/kubernetes-and-celery",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deploying/dask",
+    "destination": "/docs/deployment/execution/dask",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deploying/kubernetes",
+    "destination": "/docs/deployment/oss/deployment-options/kubernetes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/troubleshooting/run-queue",
+    "destination": "/docs/deployment/execution/customizing-run-queue-priority",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/deploy_docker",
+    "destination": "/docs/deployment/oss/deployment-options/docker",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/custom-infra/celery",
+    "destination": "/docs/deployment/oss/deployment-options/kubernetes/kubernetes-and-celery",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/custom-infra/dask",
+    "destination": "/docs/deployment/execution/dask",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/custom-infra/airflow",
+    "destination": "/docs/deployment/oss/deployment-options",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/managing-deployments",
+    "destination": "/docs/deployment/dagster-plus/management",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/open-source",
+    "destination": "/docs/deployment/oss",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment",
+    "destination": "/docs/deployment/dagster-plus",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/serverless",
+    "destination": "/docs/deployment/dagster-plus/serverless",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/deployment/serverless",
+    "destination": "/docs/deployment/dagster-plus/serverless",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/hybrid",
+    "destination": "/docs/deployment/dagster-plus/hybrid",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents",
+    "destination": "/docs/deployment/dagster-plus/hybrid",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/amazon-ecs",
+    "destination": "/docs/deployment/dagster-plus/hybrid/amazon-ecs",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/amazon-ecs/creating-ecs-agent-new-vpc",
+    "destination": "/docs/deployment/dagster-plus/hybrid/amazon-ecs/new-vpc",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/amazon-ecs/creating-ecs-agent-existing-vpc",
+    "destination": "/docs/deployment/dagster-plus/hybrid/amazon-ecs/existing-vpc",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/amazon-ecs/manually-provisioning-ecs-agent",
+    "destination": "/docs/deployment/dagster-plus/hybrid/amazon-ecs/manual-provision",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/amazon-ecs/configuration-reference",
+    "destination": "/docs/deployment/dagster-plus/hybrid/amazon-ecs/configuration-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/amazon-ecs/upgrading-cloudformation-template",
+    "destination": "/docs/deployment/dagster-plus/hybrid/amazon-ecs/upgrading-cloudformation",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/docker",
+    "destination": "/docs/deployment/dagster-plus/hybrid/docker",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/docker/configuring-running-docker-agent",
+    "destination": "/docs/deployment/dagster-plus/hybrid/docker/setup",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/docker/configuration-reference",
+    "destination": "/docs/deployment/dagster-plus/hybrid/docker/configuration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/kubernetes",
+    "destination": "/docs/deployment/dagster-plus/hybrid/kubernetes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/kubernetes/configuring-running-kubernetes-agent",
+    "destination": "/docs/deployment/dagster-plus/hybrid/kubernetes/setup",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/kubernetes/configuration-reference",
+    "destination": "/docs/deployment/dagster-plus/hybrid/kubernetes/configuration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/local",
+    "destination": "/docs/deployment/dagster-plus/hybrid/local",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/azure/overview",
+    "destination": "/docs/deployment/dagster-plus/hybrid/azure",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/customizing-configuration",
+    "destination": "/docs/deployment/dagster-plus/management/customizing-agent-settings",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/agents/running-multiple-agents",
+    "destination": "/docs/deployment/dagster-plus/hybrid/multiple",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/hybrid/multiple-agents",
+    "destination": "/docs/deployment/dagster-plus/hybrid/multiple",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account",
+    "destination": "/docs/deployment/dagster-plus/management/tokens",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/managing-user-agent-tokens",
+    "destination": "/docs/deployment/dagster-plus/management/tokens",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/account/managing-user-agent-tokens",
+    "destination": "/docs/deployment/dagster-plus/management/tokens",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/authentication",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/managing-users",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/rbac/users",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/managing-users/managing-teams",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/rbac/teams",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/managing-users/managing-user-roles-permissions",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/rbac/user-roles-permissions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/features/authentication-and-access-control/scim/enabling-scim-provisioning",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/scim",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/authentication/utilizing-scim-provisioning",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/scim",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/authentication/setting-up-azure-ad-saml-sso",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/sso/azure-ad-sso",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/features/authentication-and-access-control/scim/azure-active-directory",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/scim/entra-id-scim",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/authentication/setting-up-google-workspace-saml-sso",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/sso/google-workspace-sso",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/authentication/okta/saml-sso",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/sso/okta-sso",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/authentication/okta/scim-provisioning",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/scim",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/authentication/setting-up-onelogin-saml-sso",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/sso/onelogin-sso",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/account/authentication/setting-up-pingone-saml-sso",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/sso/pingone-sso",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments",
+    "destination": "/docs/deployment/dagster-plus/management",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/environment-variables-and-secrets",
+    "destination": "/docs/deployment/dagster-plus/management/environment-variables",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/setting-environment-variables-agents",
+    "destination": "/docs/deployment/dagster-plus/management/environment-variables/agent-config",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/reserved-environment-variables",
+    "destination": "/docs/deployment/dagster-plus/management/environment-variables/built-in",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/deployment-settings-reference",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/full-deployments/full-deployment-settings-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/branch-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/branch-deployments/using-branch-deployments-with-github",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/configuring-branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/branch-deployments/using-branch-deployments-with-gitlab",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/configuring-branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/branch-deployments/using-branch-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/configuring-branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/branch-deployments/change-tracking",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/change-tracking",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/controlling-logs",
+    "destination": "/docs/deployment/dagster-plus/management/managing-compute-logs-and-error-messages",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/best-practices",
+    "destination": "/docs/deployment/dagster-plus/management",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/best-practices/managing-multiple-projects-and-teams",
+    "destination": "/docs/deployment/dagster-plus/management/managing-multiple-projects-and-teams",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/references/ci-cd-file-reference",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/configuring-ci-cd",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/dagster-cloud-yaml",
+    "destination": "/docs/deployment/dagster-plus/management/build-yaml",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/references/limits",
+    "destination": "/docs/deployment/dagster-plus/management/rate-limits",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/overview",
+    "destination": "/docs/deployment/oss/oss-deployment-architecture",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/concepts",
+    "destination": "/docs/deployment",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-instance",
+    "destination": "/docs/deployment/oss/oss-instance-configuration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-daemon",
+    "destination": "/docs/deployment/execution/dagster-daemon",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/run-launcher",
+    "destination": "/docs/deployment/execution/run-launchers",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/run-coordinator",
+    "destination": "/docs/deployment/execution/run-coordinators",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/run-monitoring",
+    "destination": "/docs/deployment/execution/run-monitoring",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/run-retries",
+    "destination": "/docs/deployment/execution/run-retries",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides",
+    "destination": "/docs/deployment",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/service",
+    "destination": "/docs/deployment/oss/deployment-options/deploying-dagster-as-a-service",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/kubernetes",
+    "destination": "/docs/deployment/oss/deployment-options/kubernetes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/kubernetes/deploying-with-helm",
+    "destination": "/docs/deployment/oss/deployment-options/kubernetes/deploying-to-kubernetes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/kubernetes/deploying-with-helm-advanced",
+    "destination": "/docs/deployment/oss/deployment-options/kubernetes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/kubernetes/customizing-your-deployment",
+    "destination": "/docs/deployment/oss/deployment-options/kubernetes/customizing-your-deployment",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/kubernetes/how-to-migrate-your-instance",
+    "destination": "/docs/deployment/oss/deployment-options/kubernetes/migrating-while-upgrading",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deploying/k8s_part2",
+    "destination": "/docs/deployment/oss/deployment-options/kubernetes",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/docker",
+    "destination": "/docs/deployment/oss/deployment-options/docker",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/aws",
+    "destination": "/docs/deployment/oss/deployment-options/aws",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/gcp",
+    "destination": "/docs/deployment/oss/deployment-options/gcp",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/celery",
+    "destination": "/docs/deployment/execution/celery",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/dask",
+    "destination": "/docs/deployment/execution/dask",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/running-dagster-locally",
+    "destination": "/docs/deployment/oss/deployment-options/running-dagster-locally",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/dagster/branch_deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/testing-against-prod-data",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/managing-deployments/branch-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/customizing-run-queue-priority",
+    "destination": "/docs/deployment/execution/customizing-run-queue-priority",
+    "permanent": true
+  },
+  {
+    "source": "/docs/master/deployment/run-retries",
+    "destination": "/docs/deployment/execution/run-retries",
+    "permanent": true
+  },
+  {
+    "source": "/docs/master/deployment/guides/aws",
+    "destination": "/docs/deployment/oss/deployment-options/aws",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/running-locally",
+    "destination": "/docs/deployment/oss/deployment-options/running-dagster-locally",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/getting-started/getting-started-with-serverless-deployment",
+    "destination": "/docs/deployment/dagster-plus/serverless",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/getting-started/getting-started-with-hybrid-deployment",
+    "destination": "/docs/deployment/dagster-plus/hybrid",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/developing-testing/environment-variables",
+    "destination": "/docs/deployment/dagster-plus/management/environment-variables",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/developing-testing/deployment-settings-reference",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/full-deployments/full-deployment-settings-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/managing-deployments/branch-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/account/managing-users/managing-teams",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/rbac/teams",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/account/managing-users/managing-user-roles-permissions",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/rbac/user-roles-permissions",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/account/authentication/utilizing-scim-provisioning",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control/scim",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/deployment/agents/amazon-ecs/configuration-reference",
+    "destination": "/docs/deployment/dagster-plus/hybrid/amazon-ecs/configuration-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/deployment/agents/running-multiple-agents",
+    "destination": "/docs/deployment/dagster-plus/hybrid/multiple",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/managing-deployments/branch-deployments/using-branch-deployments-with-github",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/configuring-branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/account/authentication",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/ci-cd/branch-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/ci-cd/branch-deployments/change-tracking",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/change-tracking",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/ci-cd/branch-deployments/multiple-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/multiple-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/ci-cd/branch-deployments/testing",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/testing-against-prod-data",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/operate/dev-to-prod",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/testing-against-prod-data",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/ci-cd/branch-deployments/setting-up-branch-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/configuring-branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/ci-cd/branch-deployments/using-branch-deployments-with-the-cli",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/configuring-branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/managing-deployments/branch-deployments/using-branch-deployments-with-gitlab",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/configuring-branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/managing-deployments/managing-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/full-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-cloud/managing-deployments/environment-variables-and-secrets",
+    "destination": "/docs/deployment/dagster-plus/management/environment-variables",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/managing-deployments/billing",
+    "destination": "/docs/deployment/dagster-plus/management/billing",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/deploy/deployment-options",
+    "destination": "/docs/deployment/oss/deployment-options",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/deploy/deployment-options/dask",
+    "destination": "/docs/deployment/execution/dask",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/deploy/execution",
+    "destination": "/docs/deployment/execution",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/deploy/oss-deployment-architecture",
+    "destination": "/docs/deployment/oss/oss-deployment-architecture",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/deploy/instance-configuration",
+    "destination": "/docs/deployment/oss/oss-instance-configuration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/deploy/dagster-instance-configuration",
+    "destination": "/docs/deployment/oss/oss-instance-configuration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/deploy/dagster-yaml",
+    "destination": "/docs/deployment/oss/dagster-yaml",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus",
+    "destination": "/docs/deployment/dagster-plus",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/getting-started",
+    "destination": "/docs/deployment/dagster-plus/getting-started",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/code-requirements",
+    "destination": "/docs/deployment/dagster-plus/code-requirements",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/features/authentication-and-access-control",
+    "destination": "/docs/deployment/dagster-plus/authentication-and-access-control",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/features/ci-cd",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/configuring-ci-cd",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/ci-cd/configuring-ci-cd",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/configuring-ci-cd",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/ci-cd",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/configuring-ci-cd",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/ci-cd/ci-cd-in-serverless",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/configuring-ci-cd",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/ci-cd/ci-cd-in-hybrid",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/configuring-ci-cd",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/ci-cd/ci-cd-file-reference",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/configuring-ci-cd",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/deployment-types",
+    "destination": "/docs/deployment/dagster-plus",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/deployment-types/serverless",
+    "destination": "/docs/deployment/dagster-plus/serverless",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/deployment-types/hybrid",
+    "destination": "/docs/deployment/dagster-plus/hybrid",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/deployment-types/multi-tenancy",
+    "destination": "/docs/deployment/dagster-plus/hybrid/multiple",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/management/deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/full-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/full-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/full-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/management/deployments/managing-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/full-deployments/managing-full-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/full-deployments/managing-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/full-deployments/managing-full-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/management/deployments/deployment-settings-reference",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/full-deployments/full-deployment-settings-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/full-deployments/deployment-settings-reference",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/full-deployments/full-deployment-settings-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/management",
+    "destination": "/docs/deployment/dagster-plus/management",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/code-locations/dagster-cloud-yaml",
+    "destination": "/docs/deployment/dagster-plus/management/build-yaml",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/code-locations/dagster-plus-code-locations",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/adding-project-to-dagster-plus",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/management/settings/customizing-agent-settings",
+    "destination": "/docs/deployment/dagster-plus/management/customizing-agent-settings",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/serverless/ci-cd-in-serverless",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/configuring-ci-cd",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/deploying-code/ci-cd",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/configuring-ci-cd",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/deploying-code/ci-cd/ci-cd-in-serverless",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/configuring-ci-cd",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/deploying-code/ci-cd/ci-cd-in-hybrid",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/configuring-ci-cd",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/code-locations/dagster-cloud-yaml",
+    "destination": "/docs/deployment/dagster-plus/management/build-yaml",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/setting-up-branch-deployments",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/configuring-branch-deployments",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/configuring-branch-deployments-manual",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/branch-deployments/configuring-branch-deployments-cli",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/ecs",
+    "destination": "/docs/deployment/oss/deployment-options/aws",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/labs/terraform",
+    "destination": "/docs/deployment/dagster-plus/management/terraform",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/dagster-plus/full-deployments/deployment-settings-reference",
+    "destination": "/docs/deployment/dagster-plus/deploying-code/full-deployments/full-deployment-settings-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/management/build-yaml",
+    "destination": "/docs/deployment/dagster-plus/management/build-yaml",
+    "permanent": true
+  }
+]

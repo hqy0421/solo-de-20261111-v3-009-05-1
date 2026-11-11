@@ -1,0 +1,313 @@
+from argparse import Namespace
+from collections.abc import Iterator, Mapping
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, AbstractSet, Any, Optional, cast  # noqa: UP035
+
+import dagster_shared.check as check
+import orjson
+from dagster import AssetKey
+from dagster._utils.names import clean_name_lower
+from packaging import version
+
+from dagster_dbt.compat import DBT_PYTHON_VERSION
+from dagster_dbt.errors import DagsterDbtCoreNotInstalledError
+
+if TYPE_CHECKING:
+    from dagster_dbt.core.resource import DbtProject
+
+# dbt resource types that may be considered assets
+ASSET_RESOURCE_TYPES = ["model", "seed", "snapshot"]
+
+# Manifest collections holding nodes that participate in the selection graph. Mirrors the
+# collections dbt itself walks in `Manifest.build_parent_and_child_maps`; keep in sync with it.
+_GRAPH_MEMBER_COLLECTIONS = (
+    "nodes",
+    "sources",
+    "exposures",
+    "functions",
+    "metrics",
+    "semantic_models",
+    "saved_queries",
+    "unit_tests",
+)
+
+clean_name = clean_name_lower
+
+
+def default_node_info_to_asset_key(node_info: Mapping[str, Any]) -> AssetKey:
+    return AssetKey(node_info["unique_id"].split("."))
+
+
+def dagster_name_fn(dbt_resource_props: Mapping[str, Any]) -> str:
+    return dbt_resource_props["unique_id"].replace(".", "_").replace("-", "_").replace("*", "_star")
+
+
+def select_unique_ids(
+    select: str,
+    exclude: str,
+    selector: str,
+    project: Optional["DbtProject"],
+    manifest_json: Mapping[str, Any],
+) -> AbstractSet[str]:
+    """Given dbt selection paramters, return the unique ids of all resources that match that selection."""
+    manifest_version = version.parse(manifest_json.get("metadata", {}).get("dbt_version", "0.0.0"))
+    # dbt-core available, fastest to use the library directly
+    if DBT_PYTHON_VERSION is not None:
+        return _select_unique_ids_from_manifest(select, exclude, selector, manifest_json, project)
+    # The default selection is every node in the manifest and needs no selection engine. Read it
+    # from the manifest rather than asking dbt Fusion, whose graph omits nodes with neither
+    # parents nor children — those would otherwise vanish from the asset graph with no error.
+    if _is_select_all(select, exclude, selector):
+        return set(manifest_json["nodes"])
+    # dbt Fusion available, efficient(ish) to invoke the CLI for selection
+    if manifest_version.major >= 2 and project is not None:
+        return _select_unique_ids_from_cli(select, exclude, selector, project)
+    raise DagsterDbtCoreNotInstalledError(
+        f"Cannot evaluate the dbt selection (select={select!r}, exclude={exclude!r},"
+        f" selector={selector!r}): dagster-dbt does not install dbt-core, and there is no"
+        " `project` to evaluate the selection with the dbt CLI instead."
+        "\n\nInstall dbt-core with `pip install 'dagster-dbt[dbt-core]'` — any dbt adapter package,"
+        " such as `dbt-snowflake`, also pulls it in — or pass a `DbtProject`."
+        "\n\nIf the `dbt` package (dbt Fusion) is installed here, install dbt-core into a"
+        " different environment instead: the two share the `dbt` import namespace and"
+        " overwrite each other's files."
+    )
+
+
+def _is_select_all(select: str, exclude: str, selector: str) -> bool:
+    """Whether the selection is the default one, i.e. every node in the manifest."""
+    return select in ("", "fqn:*") and not exclude and not selector
+
+
+def _select_unique_ids_from_cli(
+    select: str,
+    exclude: str,
+    selector: str,
+    project: "DbtProject",
+) -> AbstractSet[str]:
+    """Uses the available dbt CLI to list the unique ids of the selected models. This is not recommended if
+    dbt-core is available, as it will be slower than using the manifest.
+    """
+    from dagster_dbt.core.resource import DbtCliResource
+
+    cmd = ["list", "--output", "json"]
+    if select and select != "fqn:*":
+        cmd.append("--select")
+        cmd.append(select)
+    if exclude:
+        cmd.append("--exclude")
+        cmd.append(exclude)
+    if selector:
+        cmd.append("--selector")
+        cmd.append(selector)
+
+    raw_events = DbtCliResource(project_dir=project).cli(cmd)._stream_stdout()  # noqa
+    unique_ids = set()
+    for event in raw_events:
+        if isinstance(event, dict):
+            try:
+                msg = orjson.loads(event.get("info", {}).get("msg", "{}"))
+            except orjson.JSONDecodeError:
+                continue
+            unique_ids.add(msg.get("unique_id"))
+
+    return unique_ids - {None}
+
+
+def _select_unique_ids_from_manifest(
+    select: str,
+    exclude: str,
+    selector: str,
+    manifest_json: Mapping[str, Any],
+    project: Optional["DbtProject"] = None,
+) -> AbstractSet[str]:
+    """Method to apply a selection string to an existing manifest.json file."""
+    import dbt.graph.cli as graph_cli
+    import dbt.graph.selector as graph_selector
+    from dbt.contracts.graph.manifest import Manifest
+    from dbt.contracts.graph.nodes import SavedQuery, SemanticModel
+    from dbt.contracts.selection import SelectorFile
+    from dbt.graph.selector_spec import IndirectSelection, SelectionSpec
+    from networkx import DiGraph
+
+    select_specified = select and select != "fqn:*"
+    check.param_invariant(
+        not ((select_specified or exclude) and selector),
+        "selector",
+        "Cannot provide both a selector and a select/exclude param.",
+    )
+
+    # NOTE: this was faster than calling `Manifest.from_dict`, so we are keeping this.
+    class _DictShim(dict):
+        """Shim to enable hydrating a dictionary into a dot-accessible object. We need this because
+        dbt expects dataclasses that can be accessed with dot notation, not bare dictionaries.
+
+        See https://stackoverflow.com/a/23689767.
+        """
+
+        def __getattr__(self, item):
+            ret = super().get(item)
+            if ret is None and item == "config":
+                # dbt-core's own parsed manifest nodes always have a `config`
+                # dataclass that defaults to `NodeConfig(enabled=True)`, even
+                # when the raw manifest.json entry omits `config` entirely --
+                # which it legitimately does for on-run-start/on-run-end hook
+                # ("operation") nodes. Without this default,
+                # `dbt.graph.selector.NodeSelector._is_graph_member`'s
+                # `node.config.enabled` raises `AttributeError` the moment any
+                # select/exclude selector is resolved against a manifest that
+                # contains a hook node.
+                return _DictShim({"enabled": True})
+            # allow recursive access e.g. foo.bar.baz
+            return _DictShim(ret) if isinstance(ret, dict) else ret
+
+    unit_tests = {}
+    if DBT_PYTHON_VERSION is not None and DBT_PYTHON_VERSION >= version.parse("1.8.0"):
+        from dbt.contracts.graph.nodes import UnitTestDefinition
+
+        unit_tests = (
+            {
+                "unit_tests": {
+                    # Starting in dbt 1.8 unit test nodes must be defined using the UnitTestDefinition class
+                    unique_id: UnitTestDefinition.from_dict(info)
+                    for unique_id, info in manifest_json["unit_tests"].items()
+                },
+            }
+            if manifest_json.get("unit_tests")
+            else {}
+        )
+
+    functions = {}
+    if DBT_PYTHON_VERSION is not None and DBT_PYTHON_VERSION >= version.parse("1.11.0"):
+        from dbt.contracts.graph.nodes import FunctionNode  # ty: ignore
+
+        functions = (
+            {
+                "functions": {
+                    unique_id: FunctionNode.from_dict(info)
+                    for unique_id, info in manifest_json["functions"].items()
+                }
+            }
+            if manifest_json.get("functions")
+            else {}
+        )
+
+    manifest = Manifest(
+        nodes={unique_id: _DictShim(info) for unique_id, info in manifest_json["nodes"].items()},  # ty: ignore[invalid-argument-type]
+        sources={  # ty: ignore[invalid-argument-type]
+            unique_id: _DictShim(info) for unique_id, info in manifest_json["sources"].items()
+        },
+        metrics={  # ty: ignore[invalid-argument-type]
+            unique_id: _DictShim(info) for unique_id, info in manifest_json["metrics"].items()
+        },
+        exposures={  # ty: ignore[invalid-argument-type]
+            unique_id: _DictShim(info) for unique_id, info in manifest_json["exposures"].items()
+        },
+        **(  # type: ignore
+            {
+                "semantic_models": {
+                    # Semantic model nodes must be defined using the SemanticModel class
+                    unique_id: SemanticModel.from_dict(info)
+                    for unique_id, info in manifest_json["semantic_models"].items()
+                },
+            }
+            if manifest_json.get("semantic_models")
+            else {}
+        ),
+        **(
+            {
+                "saved_queries": {
+                    # Saved query nodes must be defined using the SavedQuery class
+                    unique_id: SavedQuery.from_dict(info)
+                    for unique_id, info in manifest_json["saved_queries"].items()
+                },
+            }
+            if manifest_json.get("saved_queries")
+            else {}
+        ),
+        **(
+            {
+                "selectors": {
+                    unique_id: _DictShim(info)
+                    for unique_id, info in manifest_json["selectors"].items()
+                }
+            }
+            if manifest_json.get("selectors")
+            else {}
+        ),
+        **unit_tests,
+        **functions,
+    )
+
+    child_map = manifest_json["child_map"]
+
+    digraph = DiGraph(incoming_graph_data=child_map)
+    # dbt-fusion omits nodes with neither parents nor children from `child_map`, and a node
+    # absent from the graph can never be selected. Add every graph member back so isolated
+    # nodes stay selectable; a no-op for dbt-core, which keys `child_map` by every node.
+    # See https://github.com/dagster-io/dagster/issues/33801.
+    digraph.add_nodes_from(
+        unique_id
+        for collection in _GRAPH_MEMBER_COLLECTIONS
+        for unique_id in manifest_json.get(collection, {})
+    )
+
+    graph = graph_selector.Graph(digraph)
+
+    # create a parsed selection from the select string
+    _set_flag_attrs(
+        {
+            "INDIRECT_SELECTION": IndirectSelection.Eager,
+            "WARN_ERROR": True,
+        }
+    )
+
+    if selector:
+        # must parse all selectors to handle dependencies, then grab the specific selector
+        # that was specified
+        result = graph_cli.parse_from_selectors_definition(
+            source=SelectorFile.from_dict({"selectors": manifest.selectors.values()})
+        )
+        if selector not in result:
+            raise ValueError(f"Selector `{selector}` not found in manifest.")
+        parsed_spec: SelectionSpec = cast("SelectionSpec", result[selector]["definition"])
+    else:
+        parsed_spec: SelectionSpec = graph_cli.parse_union([select], True)
+
+    if exclude:
+        parsed_exclude_spec = graph_cli.parse_union([exclude], False)
+        parsed_spec = graph_cli.SelectionDifference(components=[parsed_spec, parsed_exclude_spec])
+
+    # execute this selection against the graph
+    node_selector = graph_selector.NodeSelector(graph, manifest)
+    with _dbt_selector_project_root(project):
+        selected, _ = node_selector.select_nodes(parsed_spec)
+    return selected
+
+
+@contextmanager
+def _dbt_selector_project_root(project: Optional["DbtProject"]) -> Iterator[None]:
+    """Set dbt's project root context so path selectors can match manifest file paths."""
+    if not project:
+        yield
+        return
+
+    try:
+        from dbt_common.events.contextvars import task_contextvars
+    except ImportError:
+        yield
+        return
+
+    with task_contextvars(project_root=str(project.project_dir)):
+        yield
+
+
+def _set_flag_attrs(kvs: dict[str, Any]):
+    from dbt.flags import get_flag_dict, set_flags
+
+    new_flags = Namespace()
+    for global_key, global_value in get_flag_dict().items():
+        setattr(new_flags, global_key.upper(), global_value)
+    for key, value in kvs.items():
+        setattr(new_flags, key.upper(), value)
+    set_flags(new_flags)

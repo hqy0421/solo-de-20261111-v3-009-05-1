@@ -1,0 +1,19 @@
+/* Mobile: shrink below the content width so the heading's MiddleTruncate engages. */
+:global(.dagster-mobile) .title {
+  min-width: 0;
+}
+
+.truncatedHeading {
+  max-width: 300px;
+  overflow: hidden;
+}
+
+.breadcrumbLink {
+  color: var(--color-text-light);
+  white-space: nowrap;
+}
+
+.breadcrumbLink:hover,
+.breadcrumbLink:active {
+  color: var(--color-text-light);
+}

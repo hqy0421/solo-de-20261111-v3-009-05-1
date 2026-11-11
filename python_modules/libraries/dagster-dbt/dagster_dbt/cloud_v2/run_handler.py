@@ -1,0 +1,269 @@
+import shlex
+from collections.abc import Iterator, Mapping, Sequence
+from typing import Any
+
+from dagster import (
+    AssetCheckEvaluation,
+    AssetCheckResult,
+    AssetCheckSeverity,
+    AssetExecutionContext,
+    AssetMaterialization,
+    MetadataValue,
+    Output,
+    get_dagster_logger,
+)
+from dagster._record import record
+from dagster._time import get_current_timestamp
+from dateutil import parser
+from requests.exceptions import RequestException
+
+from dagster_dbt.asset_utils import get_asset_check_key_for_test
+from dagster_dbt.cloud_v2.client import DbtCloudWorkspaceClient
+from dagster_dbt.cloud_v2.types import DbtCloudRun
+from dagster_dbt.compat import REFABLE_NODE_TYPES, SUCCESSFUL_NODE_STATUSES, NodeType, TestStatus
+from dagster_dbt.dagster_dbt_translator import DagsterDbtTranslator
+
+COMPLETED_AT_TIMESTAMP_METADATA_KEY = "dagster_dbt/completed_at_timestamp"
+
+logger = get_dagster_logger()
+
+
+@record
+class DbtCloudJobRunHandler:
+    """Handles the process of a dbt Cloud job run."""
+
+    job_id: int
+    run_id: int
+    args: Sequence[str]
+    client: DbtCloudWorkspaceClient
+
+    @classmethod
+    def run(
+        cls, job_id: int, args: Sequence[str], client: DbtCloudWorkspaceClient
+    ) -> "DbtCloudJobRunHandler":
+        run_details = client.trigger_job_run(
+            job_id, steps_override=[" ".join(shlex.quote(a) for a in ["dbt", *args])]
+        )
+        dbt_cloud_run = DbtCloudRun.from_run_details(run_details=run_details)
+        return DbtCloudJobRunHandler(
+            job_id=job_id,
+            run_id=dbt_cloud_run.id,
+            args=args,
+            client=client,
+        )
+
+    def wait(self, timeout: float | None = None) -> DbtCloudRun:
+        run_details = self.client.poll_run(run_id=self.run_id, poll_timeout=timeout)
+        dbt_cloud_run = DbtCloudRun.from_run_details(run_details=run_details)
+        return dbt_cloud_run
+
+    def cancel(self) -> None:
+        self.client.cancel_run(run_id=self.run_id)
+
+    def get_run_results(self) -> Mapping[str, Any]:
+        return self.client.get_run_results_json(run_id=self.run_id)
+
+    def get_manifest(self) -> Mapping[str, Any]:
+        return self.client.get_run_manifest_json(run_id=self.run_id)
+
+    def list_run_artifacts(self) -> Sequence[str]:
+        return self.client.list_run_artifacts(run_id=self.run_id)
+
+    def get_run_logs(self) -> str | None:
+        """Retrieves the stdout/stderr logs from the completed dbt Cloud run.
+
+        This method fetches logs from the run_steps by calling get_run_details
+        with include_related=["run_steps"].
+
+        Returns:
+            Optional[str]: The concatenated log text content from all run steps,
+                or None if logs are not available.
+        """
+        try:
+            return self.client.get_run_logs(run_id=self.run_id)
+        except RequestException as e:
+            logger.warning(f"Failed to retrieve logs for run {self.run_id}: {e}")
+            return None
+
+
+def get_run_generated_at_timestamp(run_results: Mapping[str, Any]) -> float:
+    """When the run's artifacts were generated, used for nodes dbt reported with no timing."""
+    generated_at = run_results.get("metadata", {}).get("generated_at")
+    return parser.parse(generated_at).timestamp() if generated_at else get_current_timestamp()
+
+
+def get_completed_at_timestamp(result: Mapping[str, Any], fallback_timestamp: float) -> float:
+    timing = result["timing"]
+    if len(timing) == 0:
+        # A node dbt did not actually build -- `no-op`, `reused` -- carries no timing. Report a
+        # timestamp belonging to the run rather than the current time, which would claim the node
+        # completed whenever the events happened to be parsed.
+        return fallback_timestamp
+    # result["timing"] is a list of events in run_results.json
+    # For successful models and passing tests,
+    # the last item of that list includes the timing details of the execution.
+    return parser.parse(result["timing"][-1]["completed_at"]).timestamp()
+
+
+@record
+class DbtCloudJobRunResults:
+    """Represents the run results of a dbt Cloud job run."""
+
+    run_id: int
+    run_results: Mapping[str, Any]
+
+    @classmethod
+    def from_run_results_json(cls, run_results_json: Mapping[str, Any]) -> "DbtCloudJobRunResults":
+        return cls(
+            run_id=int(run_results_json["metadata"]["env"]["DBT_CLOUD_RUN_ID"]),
+            run_results=run_results_json,
+        )
+
+    def to_default_asset_events(
+        self,
+        client: DbtCloudWorkspaceClient,
+        manifest: Mapping[str, Any],
+        dagster_dbt_translator: DagsterDbtTranslator | None = None,
+        context: AssetExecutionContext | None = None,
+    ) -> Iterator[AssetCheckEvaluation | AssetCheckResult | AssetMaterialization | Output]:
+        """Convert the run results of a dbt Cloud job run to a set of corresponding Dagster events.
+
+        Args:
+            client (DbtCloudWorkspaceClient): The client for the dbt Cloud workspace.
+            manifest (Mapping[str, Any]): The dbt manifest blob.
+            dagster_dbt_translator (DagsterDbtTranslator): Optionally, a custom translator for
+                linking dbt nodes to Dagster assets.
+            context (Optional[AssetExecutionContext]): The execution context.
+
+        Returns:
+            Iterator[Union[AssetCheckEvaluation, AssetCheckResult, AssetMaterialization, Output]]:
+                A set of corresponding Dagster events.
+
+                In a Dagster asset definition, the following are yielded:
+                - Output for refables (e.g. models, seeds, snapshots.)
+                - AssetCheckResult for dbt tests.
+
+                For ad hoc usage, the following are yielded:
+                - AssetMaterialization for refables (e.g. models, seeds, snapshots.)
+                - AssetCheckEvaluation for dbt tests.
+        """
+        dagster_dbt_translator = dagster_dbt_translator or DagsterDbtTranslator()
+        has_asset_def: bool = bool(context and context.has_assets_def)
+        partition_key: str | None = (
+            context.partition_key if context and context.has_partition_key else None
+        )
+
+        run = DbtCloudRun.from_run_details(run_details=client.get_run_details(run_id=self.run_id))
+
+        invocation_id: str = self.run_results["metadata"]["invocation_id"]
+        generated_at_timestamp: float = get_run_generated_at_timestamp(self.run_results)
+        for result in self.run_results["results"]:
+            unique_id: str = result["unique_id"]
+            dbt_resource_props: Mapping[str, Any] = manifest["nodes"].get(unique_id)
+            if not dbt_resource_props:
+                logger.warning(
+                    f"Unique ID {unique_id} not found in manifest. "
+                    f"This can happen if you are parsing old runs fetched via the sensor, "
+                    f"or if your manifest is out of date. "
+                    f"Reloading your code location will fix the latter."
+                )
+                continue
+            default_metadata = {
+                "unique_id": unique_id,
+                "invocation_id": invocation_id,
+                "execution_duration": result["execution_time"],
+            }
+
+            if run.url:
+                default_metadata["run_url"] = MetadataValue.url(run.url)
+
+            resource_type: str = dbt_resource_props["resource_type"]
+            result_status: str = result["status"]
+            # dbt Fusion omits `config.materialized` for seeds; the resource type is what
+            # dbt Core records there anyway, and a seed is never ephemeral.
+            materialization: str = (
+                dbt_resource_props.get("config", {}).get("materialized") or resource_type
+            )
+
+            is_ephemeral = materialization == "ephemeral"
+
+            if (
+                resource_type in REFABLE_NODE_TYPES
+                and result_status in SUCCESSFUL_NODE_STATUSES
+                and not is_ephemeral
+            ):
+                spec = dagster_dbt_translator.get_asset_spec(manifest, unique_id, None)
+                metadata = {
+                    **default_metadata,
+                    # Surfaces that dbt did not rebuild the node (`no-op`, `reused`) or built it
+                    # with warnings (`warn`), which is otherwise invisible on a materialization.
+                    "status": result_status,
+                    COMPLETED_AT_TIMESTAMP_METADATA_KEY: MetadataValue.timestamp(
+                        get_completed_at_timestamp(
+                            result=result, fallback_timestamp=generated_at_timestamp
+                        )
+                    ),
+                }
+                if context and has_asset_def:
+                    yield Output(
+                        value=None,
+                        output_name=spec.key.to_python_identifier(),
+                        metadata=metadata,
+                    )
+                else:
+                    yield AssetMaterialization(
+                        asset_key=spec.key,
+                        metadata=metadata,
+                        partition=partition_key,
+                    )
+            elif resource_type == NodeType.Test:
+                metadata = {
+                    **default_metadata,
+                    "status": result_status,
+                    COMPLETED_AT_TIMESTAMP_METADATA_KEY: MetadataValue.timestamp(
+                        get_completed_at_timestamp(
+                            result=result, fallback_timestamp=generated_at_timestamp
+                        )
+                    ),
+                }
+                failure_count = result.get("failures")
+                if failure_count is not None:
+                    metadata["dagster_dbt/failed_row_count"] = failure_count
+
+                asset_check_key = get_asset_check_key_for_test(
+                    manifest=manifest,
+                    dagster_dbt_translator=dagster_dbt_translator,
+                    test_unique_id=unique_id,
+                    project=None,
+                )
+
+                if (
+                    context
+                    and has_asset_def
+                    and asset_check_key is not None
+                    and asset_check_key in context.selected_asset_check_keys
+                ):
+                    # The test is an asset check in an asset, so yield an `AssetCheckResult`.
+                    yield AssetCheckResult(
+                        passed=result_status == TestStatus.Pass,
+                        asset_key=asset_check_key.asset_key,
+                        check_name=asset_check_key.name,
+                        metadata=metadata,
+                        severity=(
+                            AssetCheckSeverity.WARN
+                            if result_status == TestStatus.Warn
+                            else AssetCheckSeverity.ERROR
+                        ),
+                    )
+                elif not has_asset_def and asset_check_key is not None:
+                    yield AssetCheckEvaluation(
+                        passed=result_status == TestStatus.Pass,
+                        asset_key=asset_check_key.asset_key,
+                        check_name=asset_check_key.name,
+                        metadata=metadata,
+                        severity=(
+                            AssetCheckSeverity.WARN
+                            if result_status == TestStatus.Warn
+                            else AssetCheckSeverity.ERROR
+                        ),
+                    )

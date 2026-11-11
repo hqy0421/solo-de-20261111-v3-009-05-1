@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.19.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "assets_modern_data_stack"
+version = "1!0+dev"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "dagster",
+    "dagster-cloud",
+    "boto3",
+    "dagster-airbyte",
+    "dagster-dbt",
+    "dagster-postgres",
+    "pandas",
+    "numpy",
+    "scipy",
+    "dbt-core",
+    "dbt-postgres",
+]
+
+[tool.dagster]
+module_name = "assets_modern_data_stack.definitions"
+code_location_name = "assets_modern_data_stack"
+
+[dependency-groups]
+dev = [
+    "dagster-cloud",
+    "dagster[test]",
+    "dagster-pipes",
+    "dagster-shared",
+    "dagster-graphql",
+    "dagster-webserver",
+    "dagster-dbt",
+    "dagster-airbyte",
+    "dagster-postgres",
+    "dagster-pandas",
+    "pytest",
+    "dagster-dg-cli",
+]
+[tool.uv]
+exclude-newer = "48h"

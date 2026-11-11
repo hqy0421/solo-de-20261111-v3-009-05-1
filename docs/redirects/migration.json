@@ -1,0 +1,232 @@
+[
+  {
+    "source": "/docs/deploying/airflow",
+    "destination": "/docs/migration/airflow-to-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/examples/airflow_ingest",
+    "destination": "/docs/migration/airflow-to-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/deployment/guides/airflow",
+    "destination": "/docs/migration/airflow-to-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/version-migration",
+    "destination": "/docs/migration/upgrading",
+    "permanent": true
+  },
+  {
+    "source": "/docs/dagster-plus/deployment/migration/serverless-to-hybrid",
+    "destination": "/docs/migration/serverless-to-hybrid",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airflow/migrating-to-dagster",
+    "destination": "/docs/migration/airflow-to-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/libraries/airlift/airflow-to-dagster",
+    "destination": "/docs/migration/airflow-to-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/libraries/airlift/federation-tutorial",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/federation",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/federation-tutorial/overview",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/federation",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/full_dag",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/dag-level-migration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/operator-migration/kubernetes-pod-operator",
+    "destination": "/docs/migration/airflow-to-dagster/airflow-operator-migration/kubernetes-pod-operator",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/operator-migration/bash-operator-general",
+    "destination": "/docs/migration/airflow-to-dagster/airflow-operator-migration/bash-operator-general",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/operator-migration/bash-operator-dbt",
+    "destination": "/docs/migration/airflow-to-dagster/airflow-operator-migration/bash-operator-dbt",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/operator-migration/python-operator",
+    "destination": "/docs/migration/airflow-to-dagster/airflow-operator-migration/python-operator",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/reference",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/migration-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/libraries/airlift/federation-tutorial/observe",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/federation/observe",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/tutorial",
+    "destination": "/docs/migration/airflow-to-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/tutorial/setup",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/task-level-migration/setup",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/libraries/airlift/federation-tutorial/federated-execution",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/federation/federate-execution",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/libraries/airlift/operator-migration",
+    "destination": "/docs/migration/airflow-to-dagster/airflow-operator-migration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/libraries/airlift/airflow-to-dagster/peer",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/task-level-migration/peer",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/libraries/airlift/airflow-to-dagster/observe",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/task-level-migration/observe",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/libraries/airlift/airflow-to-dagster/migrate",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/task-level-migration/migrate",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/libraries/airlift/airflow-to-dagster/decomission",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/task-level-migration/decommission",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/libraries/airlift/airflow-to-dagster/migrate-a-full-dag",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/dag-level-migration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airflow/reference",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/migration-reference",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/airflow-dagster-equivalents",
+    "destination": "/docs/migration/airflow-to-dagster/airflow-operator-migration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/labs/components/integrations/airflow-component-tutorial",
+    "destination": "/docs/migration/airflow-to-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/migrations",
+    "destination": "/docs/migration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/migrations/migrating-airflow-to-dagster",
+    "destination": "/docs/migration/airflow-to-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airflow/from-airflow-to-dagster",
+    "destination": "/docs/migration/airflow-to-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/guides/migrations/observe-your-airflow-pipelines-with-dagster",
+    "destination": "/docs/migration/airflow-to-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/tutorial/overview",
+    "destination": "/docs/migration/airflow-to-dagster/airflow-component-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/airflow-1-migration",
+    "destination": "/docs/migration/airflow-to-dagster/airflow-component-tutorial",
+    "permanent": true
+  },
+  {
+    "source": "/docs/integrations/airlift/tutorial/migrate",
+    "destination": "/docs/migration/airflow-to-dagster",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/airflow-to-dagster/dag-level-migration/migrate",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/dag-level-migration",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/airflow-to-dagster/dag-level-migration/observe",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/dag-level-migration/observe",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/airflow-to-dagster/dag-level-migration/peer",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/dag-level-migration/peer",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/airflow-to-dagster/dag-level-migration/setup",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/dag-level-migration/setup",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/airflow-to-dagster/federation/federate-execution",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/federation/federate-execution",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/airflow-to-dagster/federation/observe",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/federation/observe",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/airflow-to-dagster/federation/setup",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/federation/setup",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/airflow-to-dagster/task-level-migration/decommission",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/task-level-migration/decommission",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/airflow-to-dagster/task-level-migration/peer",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/task-level-migration/peer",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/airflow-to-dagster/task-level-migration/setup",
+    "destination": "/docs/migration/airflow-to-dagster/airlift-v1/task-level-migration/setup",
+    "permanent": true
+  },
+  {
+    "source": "/docs/migration/prefect-to-dagster",
+    "destination": "/docs/migration/migrating-to-dagster",
+    "permanent": true
+  }
+]

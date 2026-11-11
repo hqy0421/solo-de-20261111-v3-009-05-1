@@ -1,0 +1,25 @@
+.container {
+  pointer-events: none;
+  /* Space on each side of the dividers; tunable by the surrounding layout. */
+  gap: var(--horizontal-controls-gap, 8px);
+}
+
+.container.container .item {
+  display: block;
+  position: relative;
+  pointer-events: all;
+}
+
+.container .item:not(:first-child) {
+  padding-left: var(--horizontal-controls-gap, 8px);
+}
+
+.container .item:not(:first-child)::before {
+  content: '';
+  width: 1px;
+  height: 14px;
+  background-color: var(--color-keyline-default);
+  position: absolute;
+  top: calc(50% - 7px);
+  left: 0;
+}
