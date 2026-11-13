@@ -128,13 +128,38 @@ class FilesystemIOManager(ConfigurableIOManagerFactory["PickledObjectFilesystemI
 
     base_dir: str | None = Field(default=None, description="Base directory for storing files.")
 
+    versioned: bool = Field(
+        default=False,
+        description=(
+            "When enabled, materializations are retained as immutable per-run versions"
+            " (under '<asset>/.versions/<run_id>') instead of being overwritten, and a"
+            " manifest records every materialization and the input versions each run"
+            " actually read. Defaults to False to preserve the historical behavior."
+        ),
+    )
+
+    replay_run_id: str | None = Field(
+        default=None,
+        description=(
+            "Optional run id of a historical run to replay. Inputs are resolved to the"
+            " versions that run recorded (except for partitions re-materialized in the"
+            " current run). Can also be supplied per run via the"
+            " 'dagster/version_replay_run_id' run tag, which takes precedence. Has no"
+            " effect unless versioned=True."
+        ),
+    )
+
     @classmethod
     def _is_dagster_maintained(cls) -> bool:
         return True
 
     def create_io_manager(self, context: InitResourceContext) -> "PickledObjectFilesystemIOManager":
         base_dir = self.base_dir or check.not_none(context.instance).storage_directory()
-        return PickledObjectFilesystemIOManager(base_dir=base_dir)
+        return PickledObjectFilesystemIOManager(
+            base_dir=base_dir,
+            versioned=self.versioned,
+            replay_run_id=self.replay_run_id,
+        )
 
 
 @dagster_maintained_io_manager
@@ -254,12 +279,16 @@ class PickledObjectFilesystemIOManager(UPathIOManager):
     # TODO: maybe change this to .pickle? Leaving blank for compatibility.
     extension: str | None = ""
 
-    def __init__(self, base_dir=None, **kwargs):
+    def __init__(self, base_dir=None, *, versioned: bool = False, replay_run_id=None, **kwargs):
         from upath import UPath
 
         self.base_dir = check.opt_str_param(base_dir, "base_dir")
 
-        super().__init__(base_path=UPath(base_dir, **kwargs))
+        super().__init__(
+            base_path=UPath(base_dir, **kwargs),
+            versioned=versioned,
+            replay_run_id=check.opt_str_param(replay_run_id, "replay_run_id"),
+        )
 
     def make_safe_partition_path(self, base_path: "UPath", partition: str) -> "UPath":
         # The local filesystem resolves '..' segments as upward traversal at

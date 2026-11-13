@@ -456,6 +456,7 @@ from dagster._core.errors import (
     DagsterUnknownResourceError as DagsterUnknownResourceError,
     DagsterUnmetExecutorRequirementsError as DagsterUnmetExecutorRequirementsError,
     DagsterUserCodeExecutionError as DagsterUserCodeExecutionError,
+    DagsterVersionReplayError as DagsterVersionReplayError,
     raise_execution_interrupts as raise_execution_interrupts,
 )
 from dagster._core.event_api import (
@@ -595,6 +596,9 @@ from dagster._core.storage.partition_status_cache import (
 )
 from dagster._core.storage.tags import MAX_RUNTIME_SECONDS_TAG as MAX_RUNTIME_SECONDS_TAG
 from dagster._core.storage.upath_io_manager import UPathIOManager as UPathIOManager
+from dagster._core.storage.versioned_io_manager import (
+    VERSION_REPLAY_RUN_ID_TAG as VERSION_REPLAY_RUN_ID_TAG,
+)
 from dagster._core.types.config_schema import (
     DagsterTypeLoader as DagsterTypeLoader,
     dagster_type_loader as dagster_type_loader,

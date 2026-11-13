@@ -13,6 +13,13 @@ from dagster import (
 )
 from dagster._core.definitions.partitions.utils import MultiPartitionKey
 from dagster._core.storage.io_manager import IOManager
+from dagster._core.storage.versioned_io_manager import (
+    MANIFEST_FILENAME,
+    VERSIONS_DIRNAME,
+    VersionManifest,
+    raise_missing_version,
+    resolve_replay_run_id,
+)
 
 if TYPE_CHECKING:
     from fsspec import AbstractFileSystem
@@ -72,11 +79,163 @@ class UPathIOManager(IOManager):
     def __init__(
         self,
         base_path: Optional["UPath"] = None,
+        *,
+        versioned: bool = False,
+        replay_run_id: str | None = None,
     ):
         from upath import UPath
 
         assert not self.extension or "." in self.extension
         self._base_path = base_path or UPath(".")
+        # Opt-in version retention/replay. Both flags default to off, preserving the
+        # historical overwrite-and-read-latest behavior. See
+        # dagster._core.storage.versioned_io_manager for the full semantics.
+        self._versioned = check.bool_param(versioned, "versioned")
+        self._configured_replay_run_id = check.opt_str_param(replay_run_id, "replay_run_id")
+        self._manifest: VersionManifest | None = (
+            VersionManifest(self._base_path / MANIFEST_FILENAME) if self._versioned else None
+        )
+
+    # ------------------------------------------------------------- versioning
+    @property
+    def versioned(self) -> bool:
+        """Whether immutable per-run versions and the replay manifest are enabled."""
+        return self._versioned
+
+    def _replay_run_id(self, context: InputContext | OutputContext) -> str | None:
+        if not self._versioned:
+            return None
+        return resolve_replay_run_id(context, self._configured_replay_run_id)
+
+    def _version_path(self, logical_path: "UPath", version_run_id: str) -> "UPath":
+        # <asset file> -> <asset parent>/.versions/<asset file name>/<run id>
+        return logical_path.parent / VERSIONS_DIRNAME / logical_path.name / version_run_id
+
+    def _current_run_versioned_path(
+        self,
+        context: InputContext,
+        logical_path: "UPath",
+        *,
+        partition_key: str | None,
+    ) -> Optional["UPath"]:
+        """If the current run has itself materialized the requested asset partition,
+        that freshly computed version takes precedence over the historical binding.
+
+        ``partition_key`` is passed explicitly because a multi-partition load carries
+        several input partitions and ``context.asset_partition_key`` would fail.
+        """
+        manifest = check.not_none(self._manifest)
+        run_id = context.step_context.run_id
+        version_run_id = manifest.get_output_version(
+            run_id, context.asset_key.to_string(), partition_key
+        )
+        if version_run_id is None:
+            return None
+        return self._version_path(logical_path, version_run_id)
+
+    def _resolve_versioned_input_path(
+        self,
+        context: InputContext,
+        logical_path: "UPath",
+        *,
+        partition_key: str | None,
+    ) -> "UPath":
+        """Resolve an input to the exact versioned path that must be read, honoring
+        replay bindings and never silently falling back to latest data.
+        """
+        manifest = check.not_none(self._manifest)
+        asset_key_str = context.asset_key.to_string()
+
+        # 1. A version recomputed within the current run is always used, in replay or
+        #    not: downstream steps in the same run see this run's results.
+        current_path = self._current_run_versioned_path(
+            context, logical_path, partition_key=partition_key
+        )
+        if current_path is not None:
+            manifest.record_input(
+                context.step_context.run_id, asset_key_str, partition_key, current_path.name
+            )
+            return current_path
+
+        bound_run_id = self._replay_run_id(context)
+        if bound_run_id is not None:
+            # 2. Replay: read precisely the version the bound historical run read for
+            #    this input slot. A missing binding or missing files terminates the
+            #    run instead of returning latest data.
+            version_run_id = manifest.get_input_binding(bound_run_id, asset_key_str, partition_key)
+            if version_run_id is None:
+                raise_missing_version(
+                    asset_key=asset_key_str,
+                    partition=partition_key,
+                    version_run_id=None,
+                    bound_run_id=bound_run_id,
+                    path=logical_path,
+                )
+            path = self._version_path(logical_path, version_run_id)
+            if not self.path_exists(path):
+                raise_missing_version(
+                    asset_key=asset_key_str,
+                    partition=partition_key,
+                    version_run_id=version_run_id,
+                    bound_run_id=bound_run_id,
+                    path=path,
+                )
+            manifest.record_input(
+                context.step_context.run_id, asset_key_str, partition_key, version_run_id
+            )
+            return path
+
+        # 3. Normal versioned run (no replay): read the latest retained version. The
+        #    read is still pinned to an explicit run id and recorded, so a later
+        #    rewrite cannot change what this run consumed.
+        version_run_id = self._latest_version_run_id(manifest, asset_key_str, partition_key)
+        if version_run_id is None:
+            raise_missing_version(
+                asset_key=asset_key_str,
+                partition=partition_key,
+                version_run_id=None,
+                bound_run_id=None,
+                path=logical_path,
+            )
+        path = self._version_path(logical_path, version_run_id)
+        if not self.path_exists(path):
+            raise_missing_version(
+                asset_key=asset_key_str,
+                partition=partition_key,
+                version_run_id=version_run_id,
+                bound_run_id=None,
+                path=path,
+            )
+        manifest.record_input(
+            context.step_context.run_id, asset_key_str, partition_key, version_run_id
+        )
+        return path
+
+    def _latest_version_run_id(
+        self, manifest: VersionManifest, asset_key_str: str, partition_key: str | None
+    ) -> str | None:
+        # The manifest stores no global ordering beyond insertion order; outputs are
+        # recorded as materializations happen, so scanning for the matching slot and
+        # keeping the last hit returns the most recently written version.
+        latest: str | None = None
+        for _run_id, asset_key, partition, version_run_id in manifest.iter_output_slots():
+            if asset_key == asset_key_str and partition == partition_key:
+                latest = version_run_id
+        return latest
+
+    def _record_versioned_output(
+        self, context: OutputContext, logical_path: "UPath", version_path: "UPath"
+    ) -> None:
+        manifest = check.not_none(self._manifest)
+        partition = context.asset_partition_key if context.has_asset_partitions else None
+        manifest.record_output(
+            run_id=context.run_id,
+            asset_key=context.asset_key.to_string(),
+            partition=partition,
+            version_run_id=context.run_id,
+            path=str(version_path),
+            logical_path=str(logical_path),
+        )
 
     def make_safe_partition_path(self, base_path: "UPath", partition: str) -> "UPath":
         """Join ``partition`` onto ``base_path``, escaping characters whose
@@ -200,6 +359,16 @@ class UPathIOManager(IOManager):
         path.mkdir(parents=True, exist_ok=True)
 
     def has_output(self, context: OutputContext) -> bool:
+        if self._versioned and context.has_asset_key:
+            # Outputs live under the .versions/ tree rather than the canonical path.
+            manifest = check.not_none(self._manifest)
+            partition = context.asset_partition_key if context.has_asset_partitions else None
+            version_run_id = manifest.get_output_version(
+                context.run_id, context.asset_key.to_string(), partition
+            )
+            if version_run_id is None:
+                return False
+            return self.path_exists(self._version_path(self._get_path(context), version_run_id))
         return self.path_exists(self._get_path(context))
 
     def _with_extension(self, path: "UPath") -> "UPath":
@@ -450,18 +619,38 @@ class UPathIOManager(IOManager):
             # load_from_path returns a coroutine, so we need to await the results
             return self.load_partitions_async(context)
 
+    def _load_versioned_partition(
+        self, context: InputContext, partition_key: str, logical_path: "UPath"
+    ) -> Any:
+        path = self._resolve_versioned_input_path(
+            context, logical_path, partition_key=partition_key
+        )
+        return self._load_single_input(path, context)
+
     def load_input(self, context: InputContext) -> Any | dict[str, Any]:
         # If no asset key, we are dealing with an op output which is always non-partitioned
         if not context.has_asset_key or not context.has_asset_partitions:
             path = self._get_path(context)
+            if self._versioned and context.has_asset_key:
+                # Non-partitioned asset: pin the read to a retained version.
+                path = self._resolve_versioned_input_path(context, path, partition_key=None)
             return self._load_single_input(path, context)
         else:
             # we are loading asset partitions
             asset_partition_keys = context.asset_partition_keys
             if len(asset_partition_keys) == 0:
                 return None
-            else:
-                return self._load_partitions(context)
+            if self._versioned:
+                # Each partition is independently pinned: multi-partition loads and
+                # partition mappings resolve one historical version per key.
+                logical_paths = self._get_paths_for_partitions(context)
+                objs = {}
+                for partition_key in asset_partition_keys:
+                    objs[partition_key] = self._load_versioned_partition(
+                        context, partition_key, logical_paths[partition_key]
+                    )
+                return objs
+            return self._load_partitions(context)
 
     def _handle_transition_to_partitioned_asset(self, context: OutputContext, path: "UPath"):
         # if the asset was previously non-partitioned, path will be a file, when it should
@@ -490,13 +679,24 @@ class UPathIOManager(IOManager):
                 " opting out of IO managers entirely by setting the return type of your asset/op to `None`.",
             )
 
-            path = next(iter(paths.values()))
-            self._handle_transition_to_partitioned_asset(context, path.parent)
+            logical_path = next(iter(paths.values()))
+            if not self._versioned:
+                self._handle_transition_to_partitioned_asset(context, logical_path.parent)
         else:
-            path = self._get_path(context)
+            logical_path = self._get_path(context)
+
+        if self._versioned and context.has_asset_key:
+            # Never overwrite: every materialization (including replay outputs and
+            # partial re-runs) is stored as a new immutable version keyed by run id.
+            path = self._version_path(logical_path, context.run_id)
+        else:
+            path = logical_path
         self.make_directory(path.parent)
         context.log.debug(self.get_writing_output_log_message(path))
         self.dump_to_path(context=context, obj=obj, path=path)
+
+        if self._versioned and context.has_asset_key:
+            self._record_versioned_output(context, logical_path, path)
 
         # Usually, when the value is None, it means that the user didn't intend to use an IO manager
         # at all, but ended up with one because they didn't set None as their return type
@@ -505,6 +705,8 @@ class UPathIOManager(IOManager):
         # the metadata when "obj is None", in order to avoid this confusion in the common case.
         # This comes at the cost of this metadata not being present in these edge cases.
         metadata = {"path": MetadataValue.path(str(path))} if obj is not None else {}
+        if self._versioned and context.has_asset_key and obj is not None:
+            metadata["version_run_id"] = MetadataValue.text(context.run_id)
         custom_metadata = self.get_metadata(context=context, obj=obj)
         metadata.update(custom_metadata)  # type: ignore
 

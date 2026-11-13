@@ -205,6 +205,17 @@ class DagsterInvariantViolationError(DagsterError):
     """
 
 
+class DagsterVersionReplayError(DagsterError):
+    """Raised by versioned IO managers during a replay when an input cannot be resolved
+    to a retained historical version (for example, because the bound version was never
+    materialized or its files have been deleted).
+
+    Deliberately distinct from :class:`FileNotFoundError`: a replay must terminate
+    explicitly instead of silently falling back to whatever the latest data on disk
+    happens to be.
+    """
+
+
 class DagsterExecutionStepNotFoundError(DagsterError):
     """Thrown when the user specifies execution step keys that do not exist."""
 
